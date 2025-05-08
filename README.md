@@ -1,7 +1,6 @@
-# Welcome to whspyy's project
+# Welcome to GraphVigil
 
-- GraphVigil
-- A Web Application Combining Graph Analysis with Vigilance against Network Violence
+**GraphVigil**: A Web Application Combining Graph Analysis with Vigilance against Network Violence
 
 - Shanghai Jiao Tong University
 - AI Security Lab
