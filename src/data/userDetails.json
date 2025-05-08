@@ -1,0 +1,108 @@
+
+{
+  "user1": {
+    "uid": "1023847695",
+    "username": "AlexC",
+    "fullName": "张伟",
+    "gender": "男",
+    "age": 28,
+    "location": "北京市",
+    "bio": "技术爱好者，咖啡爱好者。正在从事AI项目研究。",
+    "joinDate": "2015-04-12",
+    "followCount": 245,
+    "followersCount": 2178,
+    "postsCount": 1289,
+    "likesCount": 45980,
+    "status": "活跃",
+    "activityLevel": "高",
+    "recentActivities": [
+      {"date": "2025-04-28", "action": "发表了新文章《社交网络分析入门》"},
+      {"date": "2025-04-25", "action": "参加了\"AI技术发展\"线上研讨会"},
+      {"date": "2025-04-22", "action": "购买了新的开发工具包"}
+    ]
+  },
+  "user2": {
+    "uid": "1678945302",
+    "username": "TaylorS",
+    "fullName": "王芳",
+    "gender": "女",
+    "age": 24,
+    "location": "上海市",
+    "bio": "白天环境科学家，晚上游戏玩家。热爱探索新领域。",
+    "joinDate": "2019-08-23",
+    "followCount": 78,
+    "followersCount": 214,
+    "postsCount": 843,
+    "likesCount": 3560,
+    "status": "在线",
+    "activityLevel": "中",
+    "recentActivities": [
+      {"date": "2025-04-29", "action": "分享了一篇环保科学论文"},
+      {"date": "2025-04-27", "action": "参加了线下环保公益活动"},
+      {"date": "2025-04-24", "action": "评论了热点环保话题"}
+    ]
+  },
+  "user3": {
+    "uid": "1893456721",
+    "username": "JordanL",
+    "fullName": "李明",
+    "gender": "男",
+    "age": 31,
+    "location": "浙江省",
+    "bio": "音乐制作人和数字游民。目前正在全国各地旅行。",
+    "joinDate": "2012-02-15",
+    "followCount": 612,
+    "followersCount": 8536,
+    "postsCount": 4156,
+    "likesCount": 267800,
+    "status": "旅行中",
+    "activityLevel": "高",
+    "recentActivities": [
+      {"date": "2025-04-30", "action": "分享了西安旅行日志"},
+      {"date": "2025-04-28", "action": "发布了新专辑《城市之声》"},
+      {"date": "2025-04-26", "action": "举办了线上音乐分享会"}
+    ]
+  },
+  "user4": {
+    "uid": "1045678932",
+    "username": "MorganW",
+    "fullName": "赵丽",
+    "gender": "女",
+    "age": 27,
+    "location": "广东省",
+    "bio": "计算机科学博士生。研究量子计算应用。热爱编程和算法研究。",
+    "joinDate": "2020-01-08",
+    "followCount": 37,
+    "followersCount": 128,
+    "postsCount": 435,
+    "likesCount": 1872,
+    "status": "学习中",
+    "activityLevel": "中",
+    "recentActivities": [
+      {"date": "2025-04-29", "action": "发表了研究论文《量子算法新应用》"},
+      {"date": "2025-04-26", "action": "参加了高校学术交流会"},
+      {"date": "2025-04-23", "action": "获得了年度优秀青年学者奖"}
+    ]
+  },
+  "user5": {
+    "uid": "1567893214",
+    "username": "CaseyJ",
+    "fullName": "陈强",
+    "gender": "男",
+    "age": 33,
+    "location": "四川省",
+    "bio": "建筑师和城市设计倡导者。摄影爱好者。关注城市发展与规划。",
+    "joinDate": "2011-11-30",
+    "followCount": 289,
+    "followersCount": 1342,
+    "postsCount": 1756,
+    "likesCount": 58762,
+    "status": "工作中",
+    "activityLevel": "高",
+    "recentActivities": [
+      {"date": "2025-04-27", "action": "发布了新的城市规划设计方案"},
+      {"date": "2025-04-25", "action": "组织了城市更新公众讨论会"},
+      {"date": "2025-04-22", "action": "获得了国家级建筑设计奖项"}
+    ]
+  }
+}
