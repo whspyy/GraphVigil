@@ -1,14 +1,36 @@
 // Network algorithms implementation
 
+interface Node {
+  id: string;
+  [key: string]: unknown;
+}
+
+interface Link {
+  source: string | Node;
+  target: string | Node;
+  [key: string]: unknown;
+}
+
+interface PredictedLink {
+  source: string;
+  target: string;
+  predictionScore?: number;
+}
+
+interface GraphData {
+  nodes: Node[];
+  links: Link[];
+}
+
 // Link Prediction Algorithms
-export const runLinkPrediction = (subtype: string, graphData: any, selectedDataset: string = 'dataset1') => {
+export const runLinkPrediction = (subtype: string, graphData: GraphData, selectedDataset: string = 'dataset1') => {
   const currentLinks = new Set<string>();
-  graphData.links.forEach((link: any) => {
+  graphData.links.forEach((link: Link) => {
     currentLinks.add(`${link.source}-${link.target}`);
     currentLinks.add(`${link.target}-${link.source}`);
   });
   
-  let newLinks: any[] = [];
+  let newLinks: PredictedLink[] = [];
   
   // 不同数据集的参数设置
   const datasetParams = {
@@ -47,20 +69,20 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
       scoreNormalizationFactor: 0.4  // More randomness for dataset2
     },
     dataset3: {
-      maxLinks: 18, // Keeping this unchanged
+      maxLinks: 300, // 从 18 增加到 300
       commonNeighborThreshold: 1,
       weights: { 
-        commonNeighbors: 0.30, 
+        commonNeighbors: 0.15, // 降低权重以减少局部聚集
         adamicAdar: 0.15, 
         resourceAllocation: 0.20, 
-        embeddingCosineSim: 0.20, 
-        preferentialAttachment: 0.05,
-        secondOrderProximity: 0.10
+        embeddingCosineSim: 0.30, // 增加权重以利用更全局的特征
+        preferentialAttachment: 0.0, // 关闭优先连接以避免中心化
+        secondOrderProximity: 0.20 // 增加权重以连接较远节点
       },
       embeddingDimension: 6,
       randomSeed: 789,
-      maxLinksPerNode: 3,  // Limit max links per node
-      scoreNormalizationFactor: 0.2  // Less randomness for dataset3
+      maxLinksPerNode: 15,  // 相应增加以允许更多链接
+      scoreNormalizationFactor: 0.5  // 增加随机性以促进分散
     }
   };
   
@@ -79,7 +101,7 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
       return (Math.sin(seed * 9999 + index * 777) * 10000) % 1;
     };
     
-    graphData.nodes.forEach((node: any, index: number) => {
+    graphData.nodes.forEach((node: Node, index: number) => {
       // 为不同数据集生成不同但稳定的嵌入值
       nodeEmbeddings[node.id] = Array.from(
         { length: embeddingDimension }, 
@@ -91,12 +113,12 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
     const adjacencyMap: {[key: string]: Set<string>} = {};
     const nodeDegrees: {[key: string]: number} = {};
     
-    graphData.nodes.forEach((node: any) => {
+    graphData.nodes.forEach((node: Node) => {
       adjacencyMap[node.id] = new Set<string>();
       nodeDegrees[node.id] = 0;
     });
     
-    graphData.links.forEach((link: any) => {
+    graphData.links.forEach((link: Link) => {
       const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
       const targetId = typeof link.target === 'object' ? link.target.id : link.target;
       
@@ -127,7 +149,7 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
         let commonNeighborsCount = 0;
         let adamicAdarIndex = 0;
         let resourceAllocationIndex = 0;
-        let preferentialAttachment = nodeDegrees[node1] * nodeDegrees[node2];
+        const preferentialAttachment = nodeDegrees[node1] * nodeDegrees[node2];
         
         // Collect common neighbors for feature calculation
         const commonNeighbors: string[] = [];
@@ -217,7 +239,7 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
     // Step 4: Select the top scoring node pairs as predicted links
     // BUT limit the number of links per node to avoid concentration
     const nodeLinkCounts: {[key: string]: number} = {};
-    graphData.nodes.forEach((node: any) => {
+    graphData.nodes.forEach((node: Node) => {
       nodeLinkCounts[node.id] = 0;
     });
     
@@ -280,14 +302,14 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
   } else {
     // Fallback to existing methods if not using GCN-MPLP
     switch (subtype) {
-      case 'commonNeighbors':
+      case 'commonNeighbors': {
         const neighborMap: {[key: string]: Set<string>} = {};
         
-        graphData.nodes.forEach((node: any) => {
+        graphData.nodes.forEach((node: Node) => {
           neighborMap[node.id] = new Set<string>();
         });
         
-        graphData.links.forEach((link: any) => {
+        graphData.links.forEach((link: Link) => {
           // Handle both string and object source/target
           const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
           const targetId = typeof link.target === 'object' ? link.target.id : link.target;
@@ -323,16 +345,16 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
           }
         }
         break;
-        
-      case 'adamic':
+      }
+      case 'adamic': {
         // For adamic algorithm, ensure we handle different data formats
         const adamicNeighborMap: {[key: string]: Set<string>} = {};
         
-        graphData.nodes.forEach((node: any) => {
+        graphData.nodes.forEach((node: Node) => {
           adamicNeighborMap[node.id] = new Set<string>();
         });
         
-        graphData.links.forEach((link: any) => {
+        graphData.links.forEach((link: Link) => {
           const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
           const targetId = typeof link.target === 'object' ? link.target.id : link.target;
           
@@ -355,7 +377,7 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
             
             if (!neighbors1 || !neighbors2) continue;
             
-            let commonNeighbors = [];
+            const commonNeighbors = [];
             for (const neighbor of neighbors1) {
               if (neighbors2.has(neighbor)) {
                 commonNeighbors.push(neighbor);
@@ -368,15 +390,15 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
           }
         }
         break;
-        
-      case 'preferential':
+      }
+      case 'preferential': {
         const nodeDegrees: {[key: string]: number} = {};
         
-        graphData.nodes.forEach((node: any) => {
+        graphData.nodes.forEach((node: Node) => {
           nodeDegrees[node.id] = 0;
         });
         
-        graphData.links.forEach((link: any) => {
+        graphData.links.forEach((link: Link) => {
           const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
           const targetId = typeof link.target === 'object' ? link.target.id : link.target;
           
@@ -400,6 +422,7 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
           }
         }
         break;
+      }
     }
   }
   
@@ -408,11 +431,11 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
     // Calculate node degrees
     const nodeDegrees: {[key: string]: number} = {};
     
-    graphData.nodes.forEach((node: any) => {
+    graphData.nodes.forEach((node: Node) => {
       nodeDegrees[node.id] = 0;
     });
     
-    graphData.links.forEach((link: any) => {
+    graphData.links.forEach((link: Link) => {
       const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
       const targetId = typeof link.target === 'object' ? link.target.id : link.target;
       
@@ -499,7 +522,7 @@ export const runLinkPrediction = (subtype: string, graphData: any, selectedDatas
 };
 
 // Community Detection Algorithms
-export const runCommunityDetection = (subtype: string, graphData: any) => {
+export const runCommunityDetection = (subtype: string, graphData: GraphData) => {
   // First create a deep copy of the graph data to avoid modifying the original
   const newGraphData = JSON.parse(JSON.stringify(graphData));
   
@@ -559,7 +582,7 @@ export const runCommunityDetection = (subtype: string, graphData: any) => {
   
   // First assign communities to nodes
   const nodeCommunities: {[key: string]: number} = {};
-  const nodeIds = newGraphData.nodes.map((node: any) => node.id);
+  const nodeIds = newGraphData.nodes.map((node: Node) => node.id);
   
   // Cluster nodes into communities - adapted for different dataset sizes
   assignCommunitiesToNodes(nodeIds, nodeCommunities, numCommunities, nodeCount);
@@ -581,32 +604,61 @@ const assignCommunitiesToNodes = (
 ) => {
   // For different dataset sizes, we'll use different distribution approaches
   
-  if (nodeCount >= 200) {
-    // Large dataset - create more balanced communities
-    const communitySize = Math.ceil(nodeIds.length / numCommunities);
+  if (nodeCount >= 90) { // Apply to medium and large datasets
+    // For medium and large datasets, create communities of varying sizes.
+    // The largest community will be approximately three times the size of the smallest.
+    if (numCommunities <= 1) {
+      nodeIds.forEach(nodeId => { nodeCommunities[nodeId] = 0; });
+      return;
+    }
     
-    // Shuffle the node IDs to create more random yet balanced communities
+    const totalNodes = nodeIds.length;
+    
+    // We use an arithmetic progression to determine the proportions of community sizes.
+    // The largest community will be approximately three times the size of the smallest.
+    // Let proportions be p_0, p_1, ..., p_{C-1}. We want p_{C-1} = 3 * p_0.
+    // After calculation, this gives p_0 = 1 / (2 * C) and p_i = p_0 * (1 + 2*i/(C-1)).
+    const C = numCommunities;
+    const p0 = 1 / (2 * C);
+    const proportions: number[] = [];
+    for (let i = 0; i < C; i++) {
+      proportions.push(p0 * (1 + 2 * i / (C - 1)));
+    }
+
+    // Calculate community sizes based on proportions, handling rounding.
+    const communitySizes: number[] = [];
+    let assignedNodesCount = 0;
+    for (let i = 0; i < numCommunities - 1; i++) {
+      const size = Math.round(proportions[i] * totalNodes);
+      communitySizes.push(size);
+      assignedNodesCount += size;
+    }
+    // The last community gets the remaining nodes to ensure the total is correct.
+    communitySizes.push(totalNodes - assignedNodesCount);
+    
+    // Shuffle node IDs to randomly assign them to communities.
     const shuffledIds = [...nodeIds].sort(() => Math.random() - 0.5);
     
-    for (let i = 0; i < shuffledIds.length; i++) {
-      nodeCommunities[shuffledIds[i]] = Math.min(Math.floor(i / communitySize), numCommunities - 1);
-    }
-  } else if (nodeCount >= 90) {
-    // Medium dataset - standard approach
-    const communitySize = Math.ceil(nodeIds.length / numCommunities);
-    
-    for (let i = 0; i < nodeIds.length; i++) {
-      nodeCommunities[nodeIds[i]] = Math.min(Math.floor(i / communitySize), numCommunities - 1);
+    let currentNodeIndex = 0;
+    for (let communityId = 0; communityId < numCommunities; communityId++) {
+      const communitySize = communitySizes[communityId];
+      for (let j = 0; j < communitySize; j++) {
+        if (currentNodeIndex < shuffledIds.length) {
+          const nodeId = shuffledIds[currentNodeIndex];
+          nodeCommunities[nodeId] = communityId;
+          currentNodeIndex++;
+        }
+      }
     }
   } else {
-    // Small dataset - create more uneven communities
+    // Small dataset - create more uneven communities (existing logic is fine)
     // For small datasets, we'll create one larger community and several smaller ones
     
     // First, randomly assign initial communities
     nodeIds.forEach(nodeId => {
       // 40% chance to be in community 0, rest distributed among others
       const rand = Math.random();
-      if (rand < 0.4) {
+      if (rand < 0.4 || numCommunities <= 1) {
         nodeCommunities[nodeId] = 0;
       } else {
         // Distribute the rest among other communities
@@ -617,7 +669,7 @@ const assignCommunitiesToNodes = (
 };
 
 // Completely rewritten function to create a new graph with proper community structure
-const createCommunityBasedGraph = (graphData: any, nodeCommunities: {[key: string]: number}, nodeCount: number) => {
+const createCommunityBasedGraph = (graphData: GraphData, nodeCommunities: {[key: string]: number}, nodeCount: number) => {
   // Group nodes by community
   const communitiesMap: {[key: number]: string[]} = {};
   
@@ -736,7 +788,7 @@ const createCommunityBasedGraph = (graphData: any, nodeCommunities: {[key: strin
   
   // Remove any duplicate links that might have been created
   const uniqueLinks = new Map();
-  graphData.links.forEach((link: any) => {
+  graphData.links.forEach((link: Link) => {
     const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
     const targetId = typeof link.target === 'object' ? link.target.id : link.target;
     
@@ -797,15 +849,15 @@ export const detectCommunities = (
 };
 
 // Role Classification Algorithms
-export const runRoleClassification = (subtype: string, graphData: any) => {
+export const runRoleClassification = (subtype: string, graphData: GraphData) => {
   const adjacencyMap: {[key: string]: string[]} = {};
   
-  graphData.nodes.forEach((node: any) => {
-    const nodeId = typeof node.id === 'object' ? node.id.id : node.id;
+  graphData.nodes.forEach((node: Node) => {
+    const nodeId = node.id;
     adjacencyMap[nodeId] = [];
   });
   
-  graphData.links.forEach((link: any) => {
+  graphData.links.forEach((link: Link) => {
     const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
     const targetId = typeof link.target === 'object' ? link.target.id : link.target;
     
@@ -841,115 +893,78 @@ export const runRoleClassification = (subtype: string, graphData: any) => {
   return nodeRoles;
 };
 
+// A helper function to add random fluctuations to role percentages while ensuring they sum to 100%.
+const adjustAndNormalizePercentages = (baseProportions: { id: number, percent: number }[]): { id: number, percent: number }[] => {
+  // 1. Apply random adjustments
+  const adjusted = baseProportions.map(({ id, percent }) => {
+    // Generate a random float for adjustment, e.g., between -0.03 and 0.03
+    let randomAdjustment = (Math.random() * 0.06) - 0.03;
+
+    // Constraint: if base percent is 5%, only float upwards.
+    if (percent === 5) {
+      randomAdjustment = Math.random() * 0.03; // Float between 0% and +3%
+    }
+    
+    let adjustedPercent = (percent / 100) + randomAdjustment;
+    
+    // Ensure percentage doesn't go below a minimum threshold (e.g., 1%)
+    adjustedPercent = Math.max(0.01, adjustedPercent);
+    
+    return { id, percent: adjustedPercent };
+  });
+
+  // 2. Normalize to sum to 1.0
+  const currentSum = adjusted.reduce((sum, p) => sum + p.percent, 0);
+  
+  const normalized = adjusted.map(({ id, percent }) => ({
+    id,
+    percent: percent / currentSum * 100 // return as percentage points
+  }));
+
+  return normalized;
+};
+
 export const classifyNodesByGraphAttention = (
   adjacencyMap: {[key: string]: string[]},
   nodeRoles: {[key: string]: number},
   nodeDegrees: {[key: string]: number}
 ) => {
   const nodeIds = Object.keys(adjacencyMap);
-  const maxDegree = Math.max(...Object.values(nodeDegrees));
-  const avgDegree = Object.values(nodeDegrees).reduce((sum, d) => sum + d, 0) / nodeIds.length;
-  
-  // Calculate clustering coefficient for each node
-  const clusteringCoefficients: {[key: string]: number} = {};
-  
-  nodeIds.forEach(nodeId => {
-    const neighbors = adjacencyMap[nodeId];
-    const degree = neighbors.length;
-    
-    if (degree <= 1) {
-      clusteringCoefficients[nodeId] = 0;
-      return;
-    }
-    
-    let neighborConnections = 0;
-    for (let i = 0; i < neighbors.length; i++) {
-      for (let j = i + 1; j < neighbors.length; j++) {
-        if (adjacencyMap[neighbors[i]].includes(neighbors[j])) {
-          neighborConnections++;
-        }
-      }
-    }
-    
-    const maxPossibleConnections = (degree * (degree - 1)) / 2;
-    clusteringCoefficients[nodeId] = maxPossibleConnections > 0 ? 
-      neighborConnections / maxPossibleConnections : 0;
-  });
+  const totalNodes = nodeIds.length;
 
-  // 计算节点间的距离矩阵
-  const distanceMatrix: {[key: string]: {[key: string]: number}} = {};
-  nodeIds.forEach(nodeId => {
-    distanceMatrix[nodeId] = {};
-    nodeIds.forEach(otherId => {
-      if (nodeId === otherId) {
-        distanceMatrix[nodeId][otherId] = 0;
-      } else {
-        // 使用最短路径距离
-        const distance = calculateShortestPathDistance(nodeId, otherId, adjacencyMap);
-        distanceMatrix[nodeId][otherId] = distance;
-      }
-    });
-  });
-
-  // 首先基于度数和聚类系数进行初步分类
-  const initialRoles: {[key: string]: number} = {};
-  nodeIds.forEach(nodeId => {
-    const degree = nodeDegrees[nodeId];
-    const clusteringCoef = clusteringCoefficients[nodeId];
-    
-    if (degree >= maxDegree * 0.6 && clusteringCoef >= 0.5) {
-      initialRoles[nodeId] = 1; // 类别1
-    } else if (degree >= avgDegree * 1.2 && clusteringCoef <= 0.4) {
-      initialRoles[nodeId] = 2; // 类别2
-    } else if (degree <= avgDegree * 0.6) {
-      initialRoles[nodeId] = 3; // 类别3
-    } else {
-      initialRoles[nodeId] = 4; // 类别4
-    }
-  });
-
-  // 基于空间距离进行角色调整
-  nodeIds.forEach(nodeId => {
-    const neighbors = adjacencyMap[nodeId];
-    if (neighbors.length === 0) return;
-
-    // 获取邻居节点的角色分布
-    const neighborRoles: {[key: number]: number} = {};
-    neighbors.forEach(neighborId => {
-      const role = initialRoles[neighborId];
-      neighborRoles[role] = (neighborRoles[role] || 0) + 1;
-    });
-
-    // 找出邻居中最常见的角色
-    let maxCount = 0;
-    let mostCommonRole = initialRoles[nodeId];
-    Object.entries(neighborRoles).forEach(([role, count]) => {
-      if (count > maxCount) {
-        maxCount = count;
-        mostCommonRole = Number(role);
-      }
-    });
-
-    // 如果邻居中某个角色占比超过60%，且不是角色1，则将该节点也归为该角色
-    const totalNeighbors = neighbors.length;
-    if (maxCount / totalNeighbors > 0.6 && mostCommonRole !== 1) {
-      nodeRoles[nodeId] = mostCommonRole;
-    } else {
-      nodeRoles[nodeId] = initialRoles[nodeId];
-    }
-  });
-
-  // 检查是否有类别1的节点，如果没有，强制将一些高度数节点分配为类别1
-  const hasCategory1 = Object.values(nodeRoles).some(role => role === 1);
-  if (!hasCategory1) {
-    // 按度数排序节点
-    const sortedNodes = [...nodeIds].sort((a, b) => nodeDegrees[b] - nodeDegrees[a]);
-    // 将前10%的节点强制分配为类别1
-    const numNodesToForce = Math.max(1, Math.ceil(sortedNodes.length * 0.1));
-    for (let i = 0; i < numNodesToForce; i++) {
-      nodeRoles[sortedNodes[i]] = 1;
-    }
+  if (totalNodes === 0) {
+    return;
   }
+  
+  const sortedNodes = [...nodeIds].sort((a, b) => nodeDegrees[b] - nodeDegrees[a]);
+
+  // Base proportions for roles, in assignment order (highest degree first)
+  const baseProportions = [
+    { id: 3, percent: 10 }, // 网暴者
+    { id: 4, percent: 25 }, // 跟风者
+    { id: 1, percent: 5 },  // 劝阻者
+    { id: 2, percent: 60 }  // 无关者
+  ];
+
+  // Get dynamically adjusted and normalized proportions
+  const adjustedProportions = adjustAndNormalizePercentages(baseProportions);
+  
+  // Calculate cutoffs based on the new proportions
+  const bullyCutoff = Math.ceil(totalNodes * (adjustedProportions[0].percent / 100));
+  const followerCutoff = Math.ceil(totalNodes * ((adjustedProportions[0].percent + adjustedProportions[1].percent) / 100));
+  const dissuaderCutoff = Math.ceil(totalNodes * ((adjustedProportions[0].percent + adjustedProportions[1].percent + adjustedProportions[2].percent) / 100));
+
+  sortedNodes.forEach((nodeId, index) => {
+    if (index < bullyCutoff) {
+      nodeRoles[nodeId] = baseProportions[0].id; 
+    } else if (index < followerCutoff) {
+      nodeRoles[nodeId] = baseProportions[1].id;
+    } else if (index < dissuaderCutoff) {
+      nodeRoles[nodeId] = baseProportions[2].id;
+    } else {
+      nodeRoles[nodeId] = baseProportions[3].id;
+    }
+  });
 };
 
 // 计算两个节点之间的最短路径距离
@@ -986,62 +1001,48 @@ const calculateShortestPathDistance = (
 };
 
 export const classifyNodesByAPPNP = (
-  adjacencyMap: {[key: string]: string[]},
+  adjacencyMap: {[key:string]: string[]},
   nodeRoles: {[key: string]: number},
   nodeDegrees: {[key: string]: number}
 ) => {
   const nodeIds = Object.keys(adjacencyMap);
   const sorted = [...nodeIds].sort((a, b) => nodeDegrees[b] - nodeDegrees[a]);
   
-  // 计算每个类别的节点数量
   const totalNodes = nodeIds.length;
-  // 核心影响者 (15%)
-  const coreInfluencerCount = Math.ceil(totalNodes * 0.15);
-  // 普通影响者 (15%)
-  const regularInfluencerCount = Math.ceil(totalNodes * 0.15);
-  // 内容创作者 (25%)
-  const creatorCount = Math.ceil(totalNodes * 0.25);
-  // 连接者 (25%)
-  const connectorCount = Math.ceil(totalNodes * 0.25);
-  
-  console.log('APPNP分类统计:', {
-    totalNodes,
-    coreInfluencerCount,
-    regularInfluencerCount,
-    creatorCount,
-    connectorCount,
-    observerCount: totalNodes - (coreInfluencerCount + regularInfluencerCount + creatorCount + connectorCount)
-  });
-  
-  // 首先分配核心影响者（最高度数的节点）
-  sorted.slice(0, coreInfluencerCount).forEach(nodeId => {
-    nodeRoles[nodeId] = 1; // 核心影响者
-  });
-  
-  // 然后分配普通影响者
-  sorted.slice(coreInfluencerCount, coreInfluencerCount + regularInfluencerCount).forEach(nodeId => {
-    nodeRoles[nodeId] = 2; // 普通影响者
-  });
-  
-  // 然后分配内容创作者
-  sorted.slice(
-    coreInfluencerCount + regularInfluencerCount,
-    coreInfluencerCount + regularInfluencerCount + creatorCount
-  ).forEach(nodeId => {
-    nodeRoles[nodeId] = 3; // 内容创作者
-  });
-  
-  // 然后分配连接者
-  sorted.slice(
-    coreInfluencerCount + regularInfluencerCount + creatorCount,
-    coreInfluencerCount + regularInfluencerCount + creatorCount + connectorCount
-  ).forEach(nodeId => {
-    nodeRoles[nodeId] = 4; // 连接者
-  });
-  
-  // 剩余的是观察者
-  sorted.slice(coreInfluencerCount + regularInfluencerCount + creatorCount + connectorCount).forEach(nodeId => {
-    nodeRoles[nodeId] = 5; // 观察者
+  if (totalNodes === 0) {
+    return;
+  }
+
+  // Base proportions for roles, in assignment order (highest degree first)
+  const baseProportions = [
+    { id: 5, percent: 10 }, // 网暴者
+    { id: 4, percent: 25 }, // 跟风者
+    { id: 2, percent: 5 },  // 劝阻者
+    { id: 1, percent: 5 },  // 受害者
+    { id: 3, percent: 55 }  // 无关者
+  ];
+
+  // Get dynamically adjusted and normalized proportions
+  const adjustedProportions = adjustAndNormalizePercentages(baseProportions);
+
+  // Calculate cutoffs based on the new proportions
+  const bullyCutoff = Math.ceil(totalNodes * (adjustedProportions[0].percent / 100));
+  const followerCutoff = Math.ceil(totalNodes * ((adjustedProportions[0].percent + adjustedProportions[1].percent) / 100));
+  const dissuaderCutoff = Math.ceil(totalNodes * ((adjustedProportions[0].percent + adjustedProportions[1].percent + adjustedProportions[2].percent) / 100));
+  const victimCutoff = Math.ceil(totalNodes * ((adjustedProportions[0].percent + adjustedProportions[1].percent + adjustedProportions[2].percent + adjustedProportions[3].percent) / 100));
+
+  sorted.forEach((nodeId, index) => {
+    if (index < bullyCutoff) {
+      nodeRoles[nodeId] = baseProportions[0].id;
+    } else if (index < followerCutoff) {
+      nodeRoles[nodeId] = baseProportions[1].id;
+    } else if (index < dissuaderCutoff) {
+      nodeRoles[nodeId] = baseProportions[2].id;
+    } else if (index < victimCutoff) {
+      nodeRoles[nodeId] = baseProportions[3].id;
+    } else {
+      nodeRoles[nodeId] = baseProportions[4].id;
+    }
   });
 
   // 统计每个角色的节点数量

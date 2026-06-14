@@ -57,10 +57,10 @@ export const useChartEffect = (
       // Define categories for visual style
       const categories: {name: string}[] = [];
       if (algorithmType === 'roleClassification' && algorithmComplete) {
-        categories.push({ name: '类别1' });
-        categories.push({ name: '类别2' });
-        categories.push({ name: '类别3' });
-        categories.push({ name: '类别4' });
+        categories.push({ name: '劝阻者' });
+        categories.push({ name: '无关者' });
+        categories.push({ name: '网暴者' });
+        categories.push({ name: '跟风者' });
       } else if (algorithmType === 'communityDetection' && algorithmComplete) {
         // For community detection, use a single "用户" category
         categories.push({ name: '用户' });

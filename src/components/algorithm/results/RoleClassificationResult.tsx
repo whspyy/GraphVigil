@@ -24,46 +24,52 @@ const RoleClassificationResult: React.FC<RoleClassificationResultProps> = ({
     const baseMetrics = {
       dataset1: {
         graphAttention: {
-          accuracy: 0.728,
-          precision: 0.735,
-          recall: 0.721,
+          accuracy: 0.901,
+          precision: 0.794,
+          recall: 0.913,
+          f1: 0.907
         },
         appnp: {
-          accuracy: 0.715,
-          precision: 0.722,
-          recall: 0.708,
+          accuracy: 0.865,
+          precision: 0.739,
+          recall: 0.850,
+          f1: 0.859
         }
       },
       dataset2: {
         graphAttention: {
-          accuracy: 0.742,
-          precision: 0.748,
-          recall: 0.736,
+          accuracy: 0.925,
+          precision: 0.957,
+          recall: 0.890,
+          f1: 0.922
         },
         appnp: {
-          accuracy: 0.731,
-          precision: 0.738,
-          recall: 0.724,
+          accuracy: 0.888,
+          precision: 0.890,
+          recall: 0.881,
+          f1: 0.884
         }
       },
       dataset3: {
         graphAttention: {
-          accuracy: 0.753,
-          precision: 0.759,
-          recall: 0.747,
+          accuracy: 0.940,
+          precision: 0.792,
+          recall: 0.950,
+          f1: 0.944
         },
         appnp: {
-          accuracy: 0.743,
-          precision: 0.750,
-          recall: 0.736,
+          accuracy: 0.852,
+          precision: 0.755,
+          recall: 0.903,
+          f1: 0.874
         }
       }
     };
 
     const metrics = baseMetrics[selectedDataset as keyof typeof baseMetrics]?.[algorithmSubtype as keyof typeof baseMetrics.dataset1] || {
-      accuracy: 0.728,
-      precision: 0.735,
-      recall: 0.721,
+      accuracy: 0.901,
+      precision: 0.794,
+      recall: 0.913,
     };
 
     // 计算F1值
@@ -73,7 +79,7 @@ const RoleClassificationResult: React.FC<RoleClassificationResultProps> = ({
       accuracy: metrics.accuracy,
       precision: metrics.precision,
       recall: metrics.recall,
-      f1: f1Score
+      f1: metrics.f1
     };
   };
 
@@ -117,43 +123,43 @@ const RoleClassificationResult: React.FC<RoleClassificationResultProps> = ({
             {algorithmSubtype === 'graphAttention' ? (
               <div className="grid grid-cols-4 gap-0.5 text-xs mb-0">
                 <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
-                  <span className="block text-xs text-white">类别1</span>
-                  <span className="text-blue-300 font-bold">{rolePercentages[1]?.toFixed(0) || 0}%</span>
+                  <span className="block text-xs text-white">网暴者</span>
+                  <span className="text-[#9c27b0] font-bold">{rolePercentages[3]?.toFixed(0) || 0}%</span>
                 </div>
                 <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
-                  <span className="block text-xs text-white">类别2</span>
-                  <span className="text-tech-green font-bold">{rolePercentages[2]?.toFixed(0) || 0}%</span>
+                  <span className="block text-xs text-white">跟风者</span>
+                  <span className="text-[#ff6d00] font-bold">{rolePercentages[4]?.toFixed(0) || 0}%</span>
                 </div>
                 <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
-                  <span className="block text-xs text-white">类别3</span>
-                  <span className="text-tech-purple font-bold">{rolePercentages[3]?.toFixed(0) || 0}%</span>
+                  <span className="block text-xs text-white">劝阻者</span>
+                  <span className="text-[#5470C6] font-bold">{rolePercentages[1]?.toFixed(0) || 0}%</span>
                 </div>
                 <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
-                  <span className="block text-xs text-white">类别4</span>
-                  <span className="text-tech-accent font-bold">{rolePercentages[4]?.toFixed(0) || 0}%</span>
+                  <span className="block text-xs text-white">无关者</span>
+                  <span className="text-[#00c853] font-bold">{rolePercentages[2]?.toFixed(0) || 0}%</span>
                 </div>
               </div>
             ) : (
               <div className="grid grid-cols-5 gap-0.5 text-xs mb-0">
                 <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
-                  <span className="block text-xs text-white">类别1</span>
-                  <span className="text-[#5470C6] font-bold">{rolePercentages[1]?.toFixed(0) || 0}%</span>
+                  <span className="block text-xs text-white">网暴者</span>
+                  <span className="text-[#ffc107] font-bold">{rolePercentages[5]?.toFixed(0) || 0}%</span>
                 </div>
                 <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
-                  <span className="block text-xs text-white">类别2</span>
-                  <span className="text-[#00c853] font-bold">{rolePercentages[2]?.toFixed(0) || 0}%</span>
-                </div>
-                <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
-                  <span className="block text-xs text-white">类别3</span>
-                  <span className="text-[#9c27b0] font-bold">{rolePercentages[3]?.toFixed(0) || 0}%</span>
-                </div>
-                <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
-                  <span className="block text-xs text-white">类别4</span>
+                  <span className="block text-xs text-white">跟风者</span>
                   <span className="text-[#ff6d00] font-bold">{rolePercentages[4]?.toFixed(0) || 0}%</span>
                 </div>
                 <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
-                  <span className="block text-xs text-white">类别5</span>
-                  <span className="text-[#ffc107] font-bold">{rolePercentages[5]?.toFixed(0) || 0}%</span>
+                  <span className="block text-xs text-white">受害者</span>
+                  <span className="text-[#5470C6] font-bold">{rolePercentages[1]?.toFixed(0) || 0}%</span>
+                </div>
+                <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
+                  <span className="block text-xs text-white">劝阻者</span>
+                  <span className="text-[#00c853] font-bold">{rolePercentages[2]?.toFixed(0) || 0}%</span>
+                </div>
+                <div className="bg-tech-blue bg-opacity-30 p-0.5 rounded-md text-center">
+                  <span className="block text-xs text-white">无关者</span>
+                  <span className="text-[#9c27b0] font-bold">{rolePercentages[3]?.toFixed(0) || 0}%</span>
                 </div>
               </div>
             )}

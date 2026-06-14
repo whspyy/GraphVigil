@@ -11,9 +11,9 @@ const DatasetSelector: React.FC<DatasetSelectorProps> = ({
   onSelectDataset 
 }) => {
   const datasets = [
-    { id: 'dataset1', name: '社交网络数据集一(97 users)' },
-    { id: 'dataset2', name: '社交网络数据集二(205 users)' },
-    { id: 'dataset3', name: '社交网络数据集三(49 users)' }
+    { id: 'dataset1', name: '网暴事件社交网络数据集一' },
+    { id: 'dataset2', name: '网暴事件社交网络数据集二' },
+    { id: 'dataset3', name: '网暴事件社交网络数据集三' }
   ];
   
   // 当用户选择数据集时，保存到localStorage并触发更新

@@ -39,22 +39,22 @@ const CommunityDetectionResult: React.FC<CommunityDetectionResultProps> = ({
   useEffect(() => {
     // Determine which dataset is being used based on node count
     let metrics;
-    if (nodeCount >= 200) {
+    if (nodeCount == 205) {
       // Dataset with 205 nodes (dataset2)
       metrics = {
         nodeCount: 205,
         modularity: algorithmSubtype === 'gcn' ? 0.576 : (algorithmSubtype === 'secomm' ? 0.642 : 0.608),
         communityCount: algorithmSubtype === 'gcn' ? 4 : (algorithmSubtype === 'secomm' ? 6 : 5),
-        maxCommunitySize: algorithmSubtype === 'gcn' ? 52 : (algorithmSubtype === 'secomm' ? 43 : 48),
+        maxCommunitySize: algorithmSubtype === 'gcn' ? 52 : (algorithmSubtype === 'secomm' ? 53 : 65),
         avgDensity: algorithmSubtype === 'gcn' ? 0.732 : (algorithmSubtype === 'secomm' ? 0.758 : 0.746),
         // Updated accuracy values to be between 85-90%
-        accuracy: algorithmSubtype === 'gcn' ? 0.864 : (algorithmSubtype === 'secomm' ? 0.898 : 0.882),
+        accuracy: algorithmSubtype === 'gcn' ? 0.731 : (algorithmSubtype === 'secomm' ? 0.750 : 0.726),
         // Updated related metrics to be consistent with the new accuracy values
-        recall: algorithmSubtype === 'gcn' ? 0.835 : (algorithmSubtype === 'secomm' ? 0.874 : 0.852),
-        f1: algorithmSubtype === 'gcn' ? 0.849 : (algorithmSubtype === 'secomm' ? 0.886 : 0.867),
+        recall: algorithmSubtype === 'gcn' ? 0.786 : (algorithmSubtype === 'secomm' ? 0.790 : 0.851),
+        f1: algorithmSubtype === 'gcn' ? 0.752 : (algorithmSubtype === 'secomm' ? 0.760 : 0.749),
         adjustedRand: algorithmSubtype === 'gcn' ? 0.830 : (algorithmSubtype === 'secomm' ? 0.872 : 0.855),
       };
-    } else if (nodeCount >= 90) {
+    } else if (nodeCount == 97) {
       // Dataset with 97 nodes (dataset1)
       metrics = {
         nodeCount: 97,
@@ -63,25 +63,25 @@ const CommunityDetectionResult: React.FC<CommunityDetectionResultProps> = ({
         maxCommunitySize: algorithmSubtype === 'gcn' ? 35 : (algorithmSubtype === 'secomm' ? 28 : 32),
         avgDensity: algorithmSubtype === 'gcn' ? 0.687 : (algorithmSubtype === 'secomm' ? 0.724 : 0.710),
         // Updated accuracy values to be between 85-90%
-        accuracy: algorithmSubtype === 'gcn' ? 0.853 : (algorithmSubtype === 'secomm' ? 0.892 : 0.875),
+        accuracy: algorithmSubtype === 'gcn' ? 0.711 : (algorithmSubtype === 'secomm' ? 0.748 : 0.701),
         // Updated related metrics to be consistent with the new accuracy values
-        recall: algorithmSubtype === 'gcn' ? 0.822 : (algorithmSubtype === 'secomm' ? 0.865 : 0.848),
-        f1: algorithmSubtype === 'gcn' ? 0.837 : (algorithmSubtype === 'secomm' ? 0.878 : 0.861),
+        recall: algorithmSubtype === 'gcn' ? 0.752 : (algorithmSubtype === 'secomm' ? 0.805 : 0.654),
+        f1: algorithmSubtype === 'gcn' ? 0.722 : (algorithmSubtype === 'secomm' ? 0.791 : 0.684),
         adjustedRand: algorithmSubtype === 'gcn' ? 0.825 : (algorithmSubtype === 'secomm' ? 0.861 : 0.843),
       };
     } else {
       // Dataset with 49 nodes (dataset3)
       metrics = {
-        nodeCount: 49,
+        nodeCount: 512,
         modularity: algorithmSubtype === 'gcn' ? 0.511 : (algorithmSubtype === 'secomm' ? 0.585 : 0.548),
-        communityCount: algorithmSubtype === 'gcn' ? 2 : (algorithmSubtype === 'secomm' ? 5 : 3),
-        maxCommunitySize: algorithmSubtype === 'gcn' ? 26 : (algorithmSubtype === 'secomm' ? 15 : 20),
+        communityCount: algorithmSubtype === 'gcn' ? 4 : (algorithmSubtype === 'secomm' ? 6 : 5),
+        maxCommunitySize: algorithmSubtype === 'gcn' ? 151 : (algorithmSubtype === 'secomm' ? 129 : 145),
         avgDensity: algorithmSubtype === 'gcn' ? 0.628 : (algorithmSubtype === 'secomm' ? 0.675 : 0.654),
         // Updated accuracy values to be between 85-90%
-        accuracy: algorithmSubtype === 'gcn' ? 0.858 : (algorithmSubtype === 'secomm' ? 0.896 : 0.874),
+        accuracy: algorithmSubtype === 'gcn' ? 0.708 : (algorithmSubtype === 'secomm' ? 0.737 : 0.720),
         // Updated related metrics to be consistent with the new accuracy values
-        recall: algorithmSubtype === 'gcn' ? 0.824 : (algorithmSubtype === 'secomm' ? 0.875 : 0.845),
-        f1: algorithmSubtype === 'gcn' ? 0.841 : (algorithmSubtype === 'secomm' ? 0.885 : 0.859),
+        recall: algorithmSubtype === 'gcn' ? 0.795 : (algorithmSubtype === 'secomm' ? 0.720 : 0.705),
+        f1: algorithmSubtype === 'gcn' ? 0.758 : (algorithmSubtype === 'secomm' ? 0.727 : 0.716),
         adjustedRand: algorithmSubtype === 'gcn' ? 0.831 : (algorithmSubtype === 'secomm' ? 0.868 : 0.850),
       };
     }

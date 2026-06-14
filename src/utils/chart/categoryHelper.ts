@@ -10,18 +10,18 @@ export const generateCategories = (
   if (algorithmType === 'roleClassification') {
     if (algorithmSubtype === 'appnp') {
       return [
-        { name: '类别1', itemStyle: { color: colors.roleColors[0] } },
-        { name: '类别2', itemStyle: { color: colors.roleColors[1] } },
-        { name: '类别3', itemStyle: { color: colors.roleColors[2] } },
-        { name: '类别4', itemStyle: { color: colors.roleColors[3] } },
-        { name: '类别5', itemStyle: { color: colors.roleColors[4] } }
+        { name: '受害者', itemStyle: { color: colors.roleColors[0] } },
+        { name: '劝阻者', itemStyle: { color: colors.roleColors[1] } },
+        { name: '无关者', itemStyle: { color: colors.roleColors[2] } },
+        { name: '跟风者', itemStyle: { color: colors.roleColors[3] } },
+        { name: '网暴者', itemStyle: { color: colors.roleColors[4] } }
       ];
     } else {
       return [
-        { name: '类别1', itemStyle: { color: colors.roleColors[0] } },
-        { name: '类别2', itemStyle: { color: colors.roleColors[1] } },
-        { name: '类别3', itemStyle: { color: colors.roleColors[2] } },
-        { name: '类别4', itemStyle: { color: colors.roleColors[3] } }
+        { name: '劝阻者', itemStyle: { color: colors.roleColors[0] } },
+        { name: '无关者', itemStyle: { color: colors.roleColors[1] } },
+        { name: '网暴者', itemStyle: { color: colors.roleColors[2] } },
+        { name: '跟风者', itemStyle: { color: colors.roleColors[3] } }
       ];
     }
   } else if (algorithmType === 'communityDetection') {

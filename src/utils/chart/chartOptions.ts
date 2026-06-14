@@ -37,19 +37,19 @@ export const createChartOption = (
     if (algorithmSubtype === 'appnp') {
       // APPNP has 5 categories
       displayCategories = [
-        { name: '类别1' },
-        { name: '类别2' },
-        { name: '类别3' },
-        { name: '类别4' },
-        { name: '类别5' }
+        { name: '受害者' },
+        { name: '劝阻者' },
+        { name: '无关者' },
+        { name: '跟风者' },
+        { name: '网暴者' }
       ];
     } else {
       // Graph Attention has 4 categories
       displayCategories = [
-        { name: '类别1' },
-        { name: '类别2' },
-        { name: '类别3' },
-        { name: '类别4' }
+        { name: '劝阻者' },
+        { name: '无关者' },
+        { name: '网暴者' },
+        { name: '跟风者' }
       ];
     }
   }
