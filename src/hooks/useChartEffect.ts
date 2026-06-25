@@ -1,4 +1,4 @@
-import { useEffect, RefObject } from 'react';
+import { useEffect, useRef, RefObject, useCallback } from 'react';
 import * as echarts from 'echarts';
 import { createChartOption } from '../utils/chart/chartOptions';
 
@@ -6,6 +6,7 @@ export const useChartEffect = (
   chartRef: RefObject<HTMLDivElement>,
   chartInstance: React.MutableRefObject<echarts.ECharts | null>,
   graphData: any,
+  selectedDataset: string,
   selectedUser: string | null,
   algorithmComplete: boolean,
   predictedLinks: any[],
@@ -18,110 +19,110 @@ export const useChartEffect = (
   processedGraphData: any,
   forceRefresh?: number
 ) => {
+  // Keep latest selectedUser without forcing a full chart rebuild
+  const selectedUserRef = useRef(selectedUser);
+  selectedUserRef.current = selectedUser;
+
+  // Build the full ECharts option for the current state + a given selected user
+  const buildOption = useCallback((activeUser: string | null) => {
+    let displayData;
+
+    if (communityLayout && processedGraphData) {
+      displayData = JSON.parse(JSON.stringify(processedGraphData));
+    } else {
+      displayData = JSON.parse(JSON.stringify(graphData));
+
+      if (algorithmComplete && algorithmType === 'linkPrediction') {
+        const markedPredictedLinks = predictedLinks.map(link => ({
+          ...link,
+          isPredicted: true
+        }));
+        displayData.links = [...displayData.links, ...markedPredictedLinks];
+      }
+    }
+
+    const categories: {name: string}[] = [];
+    if (algorithmType === 'roleClassification' && algorithmComplete) {
+      categories.push({ name: '劝阻者' });
+      categories.push({ name: '无关者' });
+      categories.push({ name: '网暴者' });
+      categories.push({ name: '跟风者' });
+    } else {
+      categories.push({ name: '用户' });
+    }
+
+    const enlargedNodes: Set<string> = new Set();
+    const highlightEdges: Set<string> = new Set();
+
+    if (activeUser) {
+      enlargedNodes.add(activeUser);
+      displayData.links.forEach((link: any) => {
+        const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
+        const targetId = typeof link.target === 'object' ? link.target.id : link.target;
+
+        if (sourceId === activeUser) {
+          enlargedNodes.add(targetId);
+          highlightEdges.add(`${sourceId}-${targetId}`);
+        } else if (targetId === activeUser) {
+          enlargedNodes.add(sourceId);
+          highlightEdges.add(`${sourceId}-${targetId}`);
+        }
+      });
+    }
+
+    return createChartOption(
+      displayData,
+      activeUser,
+      selectedDataset,
+      categories,
+      predictedLinks,
+      enlargedNodes,
+      highlightEdges,
+      communityLayout,
+      communities,
+      roles,
+      algorithmType,
+      algorithmSubtype
+    );
+  }, [graphData, selectedDataset, algorithmComplete, predictedLinks, communities, roles, algorithmType, algorithmSubtype, communityLayout, processedGraphData]);
+
+  // Full rebuild: only when data / algorithm / dataset change (NOT on node selection).
+  // This preserves the force-layout "spread out" animation for algorithm runs.
   useEffect(() => {
     if (!chartRef.current) return;
-    
-    // Dispose the existing chart instance to fully recreate it
+
     if (chartInstance.current) {
       chartInstance.current.dispose();
       chartInstance.current = null;
     }
-    
-    // Create a new chart instance
-    chartInstance.current = echarts.init(chartRef.current);
-    
-    const updateChart = () => {
-      if (!chartInstance.current) return;
 
-      // Critical fix: Ensure we're using the correct data source
-      let displayData;
-      
-      if (communityLayout && processedGraphData) {
-        // Use the processed data with community structure
-        displayData = JSON.parse(JSON.stringify(processedGraphData));
-      } else {
-        // Use the original data
-        displayData = JSON.parse(JSON.stringify(graphData));
-        
-        // Add predicted links if in link prediction mode
-        if (algorithmComplete && algorithmType === 'linkPrediction') {
-          // Add isPredicted flag to all predicted links for display purposes
-          const markedPredictedLinks = predictedLinks.map(link => ({
-            ...link,
-            isPredicted: true
-          }));
-          displayData.links = [...displayData.links, ...markedPredictedLinks];
-        }
-      }
-      
-      // Define categories for visual style
-      const categories: {name: string}[] = [];
-      if (algorithmType === 'roleClassification' && algorithmComplete) {
-        categories.push({ name: '劝阻者' });
-        categories.push({ name: '无关者' });
-        categories.push({ name: '网暴者' });
-        categories.push({ name: '跟风者' });
-      } else if (algorithmType === 'communityDetection' && algorithmComplete) {
-        // For community detection, use a single "用户" category
-        categories.push({ name: '用户' });
-      } else {
-        categories.push({ name: '用户' });
-      }
-      
-      // Set of nodes to be enlarged (selected and connected nodes)
-      const enlargedNodes: Set<string> = new Set();
-      const highlightEdges: Set<string> = new Set();
-      
-      if (selectedUser) {
-        enlargedNodes.add(selectedUser);
-        displayData.links.forEach((link: any) => {
-          const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
-          const targetId = typeof link.target === 'object' ? link.target.id : link.target;
-          
-          if (sourceId === selectedUser) {
-            enlargedNodes.add(targetId);
-            highlightEdges.add(`${sourceId}-${targetId}`);
-          } else if (targetId === selectedUser) {
-            enlargedNodes.add(sourceId);
-            highlightEdges.add(`${sourceId}-${targetId}`);
-          }
-        });
-      }
-      
-      const option = createChartOption(
-        displayData,
-        selectedUser,
-        categories,
-        predictedLinks,
-        enlargedNodes,
-        highlightEdges,
-        communityLayout,
-        communities,
-        roles,
-        algorithmType,
-        algorithmSubtype
-      );
-      
-      chartInstance.current!.setOption(option);
-    };
-    
-    updateChart();
-    
+    chartInstance.current = echarts.init(chartRef.current);
+    chartInstance.current.setOption(buildOption(selectedUserRef.current));
+
     chartInstance.current.on('click', function(params) {
       if (params.dataType === 'node') {
         const data = params.data as { id: string };
         onUserSelect(data.id);
       }
     });
-    
+
     const handleResize = () => {
       chartInstance.current?.resize();
     };
-    
+
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [graphData, selectedUser, algorithmComplete, predictedLinks, communities, roles, algorithmType, algorithmSubtype, onUserSelect, communityLayout, processedGraphData, chartRef, forceRefresh]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buildOption, onUserSelect, chartRef, forceRefresh]);
+
+  // Lightweight highlight update: on node selection only, merge styles into the
+  // existing instance without re-initializing or restarting the force layout.
+  useEffect(() => {
+    if (!chartInstance.current) return;
+    chartInstance.current.setOption(buildOption(selectedUser), { lazyUpdate: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUser]);
 };

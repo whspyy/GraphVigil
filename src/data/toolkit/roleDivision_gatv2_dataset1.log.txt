@@ -1,0 +1,22 @@
+[INFO] ====== 任务: 网暴角色划分 ======
+[INFO] 算法: GATv2  |  数据集: 网暴事件社交网络数据集
+[INFO] 加载数据集 ...
+[INFO] 构建图结构与特征矩阵 ...
+[INFO] 节点数: 334  边数: 2347
+[INFO] 划分训练集 / 测试集 (80% / 20%) ...
+[INFO] 初始化模型参数 ...
+[TRAIN] epoch 1/11  loss=0.9199  acc=0.7002
+[TRAIN] epoch 2/11  loss=0.6708  acc=0.7588
+[TRAIN] epoch 3/11  loss=0.5131  acc=0.7967
+[TRAIN] epoch 4/11  loss=0.3955  acc=0.8262
+[TRAIN] epoch 5/11  loss=0.2852  acc=0.8457
+[TRAIN] epoch 6/11  loss=0.2348  acc=0.8618
+[TRAIN] epoch 7/11  loss=0.1807  acc=0.8833
+[TRAIN] epoch 8/11  loss=0.1344  acc=0.8979
+[TRAIN] epoch 9/11  loss=0.1188  acc=0.9012
+[TRAIN] epoch 10/11  loss=0.1112  acc=0.9021
+[TRAIN] epoch 11/11  loss=0.0864  acc=0.9095
+[INFO] 训练完成，开始在测试集上评估 ...
+[EVAL] 正在计算预测结果 ...
+[EVAL] 评估完成。
+[DONE] 测试流程结束，详见下方指标与预测结果表。

@@ -4,6 +4,8 @@ import {
   Card,
   CardContent
 } from '../../ui/card';
+import MetricValue from '../MetricValue';
+import { getRoleMetrics } from '../../../utils/metricExplain';
 
 interface RoleClassificationResultProps {
   algorithmSubtype: string | null;
@@ -18,73 +20,7 @@ const RoleClassificationResult: React.FC<RoleClassificationResultProps> = ({
   nodeRoles = {},
   selectedDataset
 }) => {
-  // 根据不同数据集和算法类型计算性能指标
-  const calculatePerformanceMetrics = () => {
-    // 基础性能指标
-    const baseMetrics = {
-      dataset1: {
-        graphAttention: {
-          accuracy: 0.901,
-          precision: 0.794,
-          recall: 0.913,
-          f1: 0.907
-        },
-        appnp: {
-          accuracy: 0.865,
-          precision: 0.739,
-          recall: 0.850,
-          f1: 0.859
-        }
-      },
-      dataset2: {
-        graphAttention: {
-          accuracy: 0.925,
-          precision: 0.957,
-          recall: 0.890,
-          f1: 0.922
-        },
-        appnp: {
-          accuracy: 0.888,
-          precision: 0.890,
-          recall: 0.881,
-          f1: 0.884
-        }
-      },
-      dataset3: {
-        graphAttention: {
-          accuracy: 0.940,
-          precision: 0.792,
-          recall: 0.950,
-          f1: 0.944
-        },
-        appnp: {
-          accuracy: 0.852,
-          precision: 0.755,
-          recall: 0.903,
-          f1: 0.874
-        }
-      }
-    };
-
-    const metrics = baseMetrics[selectedDataset as keyof typeof baseMetrics]?.[algorithmSubtype as keyof typeof baseMetrics.dataset1] || {
-      accuracy: 0.901,
-      precision: 0.794,
-      recall: 0.913,
-    };
-
-    // 计算F1值
-    const f1Score = ((2 * metrics.precision * metrics.recall) / (metrics.precision + metrics.recall)).toFixed(3);
-
-    return {
-      accuracy: metrics.accuracy,
-      precision: metrics.precision,
-      recall: metrics.recall,
-      f1: metrics.f1
-    };
-  };
-
-  const performanceMetrics = calculatePerformanceMetrics();
-  
+  const performanceMetrics = getRoleMetrics(selectedDataset, algorithmSubtype);
   const calculateRolePercentages = () => {
     const roleCounts: {[key: number]: number} = {};
     const totalNodes = Object.keys(nodeRoles).length;
@@ -166,23 +102,23 @@ const RoleClassificationResult: React.FC<RoleClassificationResultProps> = ({
           </div>
           
           <div className="mb-0.5">
-            <h5 className="text-xs font-bold text-white mb-0">性能指标</h5>
+            <h5 className="text-xs font-bold text-white mb-0">性能指标<span className="ml-1 text-[10px] font-normal text-gray-400">（悬停查看计算过程）</span></h5>
             <div className="grid grid-cols-2 gap-x-4 gap-y-0 text-xs">
               <div className="flex justify-between">
                 <span className="text-gray-400">准确率:</span>
-                <span className="text-blue-300 font-bold">{performanceMetrics.accuracy.toFixed(3)}</span>
+                <MetricValue value={performanceMetrics.accuracy.display} explain={performanceMetrics.accuracy.explain} className="text-blue-300 font-bold" />
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">召回率:</span>
-                <span className="text-blue-300 font-bold">{performanceMetrics.recall.toFixed(3)}</span>
+                <MetricValue value={performanceMetrics.recall.display} explain={performanceMetrics.recall.explain} className="text-blue-300 font-bold" />
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">精确度:</span>
-                <span className="text-blue-300 font-bold">{performanceMetrics.precision.toFixed(3)}</span>
+                <span className="text-gray-400">精确率:</span>
+                <MetricValue value={performanceMetrics.precision.display} explain={performanceMetrics.precision.explain} className="text-blue-300 font-bold" />
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">F1值:</span>
-                <span className="text-blue-300 font-bold">{performanceMetrics.f1}</span>
+                <MetricValue value={performanceMetrics.f1.display} explain={performanceMetrics.f1.explain} className="text-blue-300 font-bold" />
               </div>
             </div>
           </div>

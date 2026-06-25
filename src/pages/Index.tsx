@@ -5,6 +5,7 @@ import UserList from '../components/UserList';
 import UserDetail from '../components/UserDetail';
 import AlgorithmPanel from '../components/AlgorithmPanel';
 import FloatingPanelSelector from '../components/FloatingPanelSelector';
+import ToolkitDialog from '../components/ToolkitDialog';
 import { useIsMobile } from '../hooks/use-mobile';
 
 const Index = () => {
@@ -15,6 +16,7 @@ const Index = () => {
   const [algorithmRunning, setAlgorithmRunning] = useState<boolean>(false);
   const [algorithmComplete, setAlgorithmComplete] = useState<boolean>(false);
   const [nodeRoles, setNodeRoles] = useState<{[key: string]: number}>({});
+  const [toolkitOpen, setToolkitOpen] = useState<boolean>(false);
   
   // Add state for panel visibility
   const [visiblePanels, setVisiblePanels] = useState({
@@ -81,6 +83,14 @@ const Index = () => {
             </span>
           </h1>
         </div>
+
+        {/* Toolkit button on the right */}
+        <button
+          onClick={() => setToolkitOpen(true)}
+          className="ml-auto shrink-0 z-10 whitespace-nowrap px-5 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 transition-colors shadow"
+        >
+          工具集
+        </button>
       </header>
 
       {/* Main content */}
@@ -154,6 +164,9 @@ const Index = () => {
           onTogglePanel={handleTogglePanel} 
         />
       </main>
+
+      {/* Standalone algorithm testing toolkit */}
+      <ToolkitDialog open={toolkitOpen} onOpenChange={setToolkitOpen} />
     </div>
   );
 };

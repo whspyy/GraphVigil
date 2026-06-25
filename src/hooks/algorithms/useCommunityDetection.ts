@@ -10,9 +10,6 @@ export const useCommunityDetection = (
   const handleCommunityDetection = useCallback((algorithmSubtype: string, graphData: any) => {
     // Run community detection algorithm
     let nodeCommunities = runCommunityDetection(algorithmSubtype, graphData);
-    console.log(`Community detection complete with algorithm: ${algorithmSubtype}`);
-    console.log(`Total nodes: ${graphData.nodes.length}`);
-    console.log(`Detected communities:`, nodeCommunities);
     
     // Create a deep copy to avoid reference issues
     const communityGraphData = JSON.parse(JSON.stringify(graphData));
@@ -49,12 +46,23 @@ export const useCommunityDetection = (
       communitiesMap = updatedCommunitiesMap;
     }
     
+    const isUltraLargeDataset = graphData?.nodes?.length >= 1000;
+
     // Create BA model-inspired connections within each community
     Object.values(communitiesMap).forEach(communityNodes => {
       if (communityNodes.length <= 1) return; // Skip single-node communities
       
-      // Generate edges using BA model-inspired algorithm with reduced density
-      const communityEdges = generateBAModelCommunityEdges(communityNodes);
+      // Only tune density for the ultra-large dataset. Other datasets keep the
+      // previous global defaults so their visual effect stays unchanged.
+      const communityEdges = generateBAModelCommunityEdges(
+        communityNodes,
+        isUltraLargeDataset
+          ? {
+              densityFactor: 0.32,
+              extraEdgesFactor: 0.018,
+            }
+          : undefined
+      );
       
       // Add the generated edges to the graph
       communityEdges.forEach(([source, target]) => {

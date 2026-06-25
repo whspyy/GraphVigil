@@ -71,6 +71,7 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({
     chartRef,
     chartInstance,
     graphData,
+    selectedDataset,
     selectedUser,
     algorithmComplete,
     predictedLinks,

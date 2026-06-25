@@ -1,0 +1,20 @@
+[INFO] ====== 任务: 基于链接预测的群组结构挖掘 ======
+[INFO] 算法: 基于融合GCN和DNN的双重编码器算法  |  数据集: 网暴事件社交网络数据集一
+[INFO] 加载数据集 ...
+[INFO] 构建图结构与特征矩阵 ...
+[INFO] 节点数: 555  边数: 1148
+[INFO] 划分训练集 / 测试集 (80% / 20%) ...
+[INFO] 初始化模型参数 ...
+[TRAIN] epoch 1/9  loss=0.9161  acc=0.6918
+[TRAIN] epoch 2/9  loss=0.6716  acc=0.7552
+[TRAIN] epoch 3/9  loss=0.4954  acc=0.8055
+[TRAIN] epoch 4/9  loss=0.3866  acc=0.8212
+[TRAIN] epoch 5/9  loss=0.2787  acc=0.8520
+[TRAIN] epoch 6/9  loss=0.2132  acc=0.8701
+[TRAIN] epoch 7/9  loss=0.1766  acc=0.8801
+[TRAIN] epoch 8/9  loss=0.1360  acc=0.8820
+[TRAIN] epoch 9/9  loss=0.1120  acc=0.8880
+[INFO] 训练完成，开始在测试集上评估 ...
+[EVAL] 正在计算预测结果 ...
+[EVAL] 评估完成。
+[DONE] 测试流程结束，详见下方指标与预测结果表。

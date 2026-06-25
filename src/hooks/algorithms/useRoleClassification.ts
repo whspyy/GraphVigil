@@ -12,13 +12,9 @@ export const useRoleClassification = (
   ) => {
     // Use the appropriate data source
     const dataToUse = communityLayout && processedGraphData ? processedGraphData : graphData;
-    
-    console.log(`Running role classification with algorithm: ${algorithmSubtype}`);
-    
+
     // Use the runRoleClassification function to classify nodes
     const nodeRoles = runRoleClassification(algorithmSubtype, dataToUse);
-    
-    console.log('Role classification results:', nodeRoles);
     setRoles(nodeRoles);
   }, [setRoles]);
 

@@ -23,14 +23,8 @@ const UserDetail: React.FC<UserDetailProps> = ({ selectedUser, selectedDataset }
     );
   }
 
-  console.log("UserDetail component - Selected user:", selectedUser);
-  console.log("UserDetail component - Selected dataset:", selectedDataset);
-  console.log("UserDetail component - userDetailsData length:", userDetailsData?.length || 0);
-  
   const userDetails = generateUserDetails(selectedUser, userDetailsData);
-  
-  console.log("显示用户详细信息:", selectedUser, "姓名:", userDetails.fullName, "UID:", userDetails.uid);
-  
+
   // Get status badge color based on status
   const getStatusColor = (status: string) => {
     switch(status) {

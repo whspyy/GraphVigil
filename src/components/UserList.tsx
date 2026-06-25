@@ -6,6 +6,7 @@ import { generateUserDetails } from '../utils/userDetailsGenerator';
 import dataset1 from '../data/dataset1.json';
 import dataset2 from '../data/dataset2.json';
 import dataset3 from '../data/dataset3.json';
+import dataset4 from '../data/dataset4.json';
 
 interface UserListProps {
   selectedDataset: string;
@@ -36,6 +37,9 @@ const UserList: React.FC<UserListProps> = ({
         break;
       case 'dataset3':
         dataset = dataset3;
+        break;
+      case 'dataset4':
+        dataset = dataset4;
         break;
       default:
         dataset = dataset1;

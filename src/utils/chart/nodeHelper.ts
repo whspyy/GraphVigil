@@ -1,10 +1,12 @@
 import { ChartColors, ChartNodeData } from './types';
+import { buildNodeTooltip } from './tooltipHelper';
 
 // Process and format node data for visualization
 export const processNode = (
   node: any,
   selectedUser: string | null,
   highlightNodes: Set<string>,
+  selectedDataset: string,
   communities: {[key: string]: number},
   roles: {[key: string]: number},
   algorithmType: string | null,
@@ -25,8 +27,12 @@ export const processNode = (
     const center = communityCenters[communityId];
     
     if (center) {
-      // Add some random offset around the community center
-      const offsetDistance = 30 + Math.random() * 50;
+      // Spread nodes within their cluster. Large graphs need a bigger spread so
+      // the many nodes per community don't overlap into a single blob.
+      const isLargeGraph = Object.keys(communities).length >= 1000;
+      const baseOffset = isLargeGraph ? 90 : 30;
+      const offsetRange = isLargeGraph ? 130 : 50;
+      const offsetDistance = baseOffset + Math.random() * offsetRange;
       const offsetAngle = Math.random() * 2 * Math.PI;
       
       nodePosition = {
@@ -44,26 +50,12 @@ export const processNode = (
   if (algorithmType === 'roleClassification' && roles && roles[nodeId] !== undefined) {
     // For role classification, use roles for category and color
     const role = roles[nodeId];
-    console.log('处理节点:', {
-      nodeId,
-      role,
-      algorithmSubtype,
-      originalCategoryIndex: categoryIndex
-    });
-    
     // 对于APPNP，角色1-5直接映射到类别0-4
     // 对于Graph Attention，角色1-4直接映射到类别0-3
     categoryIndex = role - 1;
     // 确保categoryIndex在有效范围内
     categoryIndex = Math.min(categoryIndex, colors.roleColors.length - 1);
     nodeColor = colors.roleColors[categoryIndex];
-    
-    console.log('节点处理结果:', {
-      nodeId,
-      finalCategoryIndex: categoryIndex,
-      nodeColor,
-      role
-    });
   } else if (algorithmType === 'communityDetection') {
     // For community detection, use default blue color
     nodeColor = colors.communityNeutralColor;
@@ -72,6 +64,23 @@ export const processNode = (
     // Default color
     nodeColor = '#5470C6'; // changed from #2962ff
   }
+
+  // Build hover tooltip info (预测标签 vs ground truth)
+  const communityCount = Object.keys(communities).length
+    ? Math.max(...Object.values(communities)) + 1
+    : 0;
+  const roleIdList = Array.from(new Set(Object.values(roles)));
+  const tooltipInfo = buildNodeTooltip(
+    nodeId,
+    node.name,
+    selectedDataset,
+    algorithmType,
+    algorithmSubtype,
+    communities,
+    roles,
+    communityCount,
+    roleIdList
+  );
   
   return {
     id: nodeId,
@@ -91,6 +100,7 @@ export const processNode = (
         color: nodeColor
       }
     },
+    tooltipInfo,
     ...nodePosition
   };
 };

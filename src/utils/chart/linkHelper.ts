@@ -1,11 +1,13 @@
 import { ChartLinkData } from './types';
+import { buildLinkTooltip } from './tooltipHelper';
 
 // Process and format link data for visualization
 export const processLink = (
   link: any,
   highlightEdges: Set<string>,
   predictedLinks: any[],
-  algorithmType: string | null = null
+  algorithmType: string | null = null,
+  selectedDataset: string = 'dataset1'
 ): ChartLinkData => {
   // Handle both string and object representations of source and target
   const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
@@ -26,10 +28,17 @@ export const processLink = (
   // For community detection and role classification, always force solid lines regardless of isPredicted flag
   const linkType = (algorithmType === 'communityDetection' || algorithmType === 'roleClassification') ? 'solid' : 
                    (isPredicted ? 'dashed' : 'solid');
+
+  // Predicted links (link prediction mode) carry a hover tooltip: 预测 vs 真实
+  const tooltipInfo =
+    algorithmType === 'linkPrediction' && isPredicted
+      ? buildLinkTooltip(sourceId, targetId, selectedDataset)
+      : undefined;
   
   return {
     source: sourceId,
     target: targetId,
+    tooltipInfo,
     lineStyle: {
       width: highlightEdges.has(linkId) ? 5 : 2,
       color: linkColor,

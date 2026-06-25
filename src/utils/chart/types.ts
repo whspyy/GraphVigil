@@ -16,6 +16,7 @@ export interface ChartNodeData {
       color?: string;
     }
   };
+  tooltipInfo?: any;
   x?: number;
   y?: number;
   fixed?: boolean;
@@ -24,6 +25,7 @@ export interface ChartNodeData {
 export interface ChartLinkData {
   source: string;
   target: string;
+  tooltipInfo?: any;
   lineStyle: {
     width: number;
     color: string;

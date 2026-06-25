@@ -23,7 +23,6 @@ export const generateUserDetails = (userId: string, userDetailsArray?: any[]) =>
 
   // Check if we have user details array
   if (!userDetailsArray || userDetailsArray.length === 0) {
-    console.log("Warning: No user details array provided");
     return createDefaultUserDetails(userId);
   }
   
@@ -39,9 +38,7 @@ export const generateUserDetails = (userId: string, userDetailsArray?: any[]) =>
   // If we have a valid index (starting from 1), get the corresponding user (adjusting for 0-based indexing)
   if (userIndex > 0 && userIndex <= userDetailsArray.length) {
     const matchedUser = userDetailsArray[userIndex - 1];
-    
-    console.log(`Found user in dataset: ${matchedUser.user_name}, ID: ${matchedUser.user_id}, index: ${userIndex}`);
-    
+
     // Generate random activities
     const recentActivities = generateRandomActivities();
     
@@ -74,8 +71,7 @@ export const generateUserDetails = (userId: string, userDetailsArray?: any[]) =>
       isCertified: matchedUser.user_type === "认证用户"
     };
   }
-  
-  console.log(`No user details found for ID: ${userId}, index: ${userIndex}, array length: ${userDetailsArray?.length}`);
+
   return createDefaultUserDetails(userId);
 };
 

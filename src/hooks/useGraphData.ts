@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react';
 import dataset1 from '../data/dataset1.json';
 import dataset2 from '../data/dataset2.json';
 import dataset3 from '../data/dataset3.json';
+import dataset4 from '../data/dataset4.json';
 import dataset1UserDetails from '../data/dataset1_userDetails.json';
 import dataset2UserDetails from '../data/dataset2_userDetails.json';
 import dataset3UserDetails from '../data/dataset3_userDetails.json';
+import dataset4UserDetails from '../data/dataset4_userDetails.json';
 
 export const useGraphData = (selectedDataset: string = 'dataset1') => {
   const [graphData, setGraphData] = useState(dataset1);
@@ -29,17 +31,18 @@ export const useGraphData = (selectedDataset: string = 'dataset1') => {
       case 'dataset1':
         data = dataset1;
         userDetails = dataset1UserDetails;
-        console.log("Loading dataset1 with user details count:", dataset1UserDetails.length);
         break;
       case 'dataset2':
         data = dataset2;
         userDetails = dataset2UserDetails;
-        console.log("Loading dataset2 with user details count:", dataset2UserDetails.length);
         break;
       case 'dataset3':
         data = dataset3;
         userDetails = dataset3UserDetails;
-        console.log("Loading dataset3 with user details count:", dataset3UserDetails.length);
+        break;
+      case 'dataset4':
+        data = dataset4;
+        userDetails = dataset4UserDetails;
         break;
       default:
         data = dataset1;
@@ -63,8 +66,6 @@ export const useGraphData = (selectedDataset: string = 'dataset1') => {
     
     // Force a complete chart instance refresh
     setForceRefresh(prev => prev + 1);
-    
-    console.log(`Dataset switched to ${selectedDataset}, user details count:`, userDetails.length);
   }, [selectedDataset]);
 
   return {

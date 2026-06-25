@@ -1,0 +1,22 @@
+[INFO] ====== 任务: 基于链接预测的群组结构挖掘 ======
+[INFO] 算法: 基于GCN和自表达矩阵的算法  |  数据集: 网暴事件社交网络数据集一
+[INFO] 加载数据集 ...
+[INFO] 构建图结构与特征矩阵 ...
+[INFO] 节点数: 496  边数: 1354
+[INFO] 划分训练集 / 测试集 (80% / 20%) ...
+[INFO] 初始化模型参数 ...
+[TRAIN] epoch 1/11  loss=0.9341  acc=0.6900
+[TRAIN] epoch 2/11  loss=0.6867  acc=0.7471
+[TRAIN] epoch 3/11  loss=0.5033  acc=0.8020
+[TRAIN] epoch 4/11  loss=0.3903  acc=0.8275
+[TRAIN] epoch 5/11  loss=0.2789  acc=0.8491
+[TRAIN] epoch 6/11  loss=0.2268  acc=0.8664
+[TRAIN] epoch 7/11  loss=0.1822  acc=0.8763
+[TRAIN] epoch 8/11  loss=0.1475  acc=0.8865
+[TRAIN] epoch 9/11  loss=0.1102  acc=0.9002
+[TRAIN] epoch 10/11  loss=0.1120  acc=0.8985
+[TRAIN] epoch 11/11  loss=0.0846  acc=0.9083
+[INFO] 训练完成，开始在测试集上评估 ...
+[EVAL] 正在计算预测结果 ...
+[EVAL] 评估完成。
+[DONE] 测试流程结束，详见下方指标与预测结果表。

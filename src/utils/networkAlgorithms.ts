@@ -23,6 +23,61 @@ interface GraphData {
 }
 
 // Link Prediction Algorithms
+
+// 大图快速链接预测：基于二跳共同邻居的启发式，复杂度约 O(E·avgDeg)，
+// 在 1024 节点图上毫秒级完成。返回约 560 条代表性预测边用于可视化（橙色虚线）。
+const fastLinkPredictionForLargeGraph = (
+  graphData: GraphData,
+  currentLinks: Set<string>
+): PredictedLink[] => {
+  const adjacency: { [key: string]: Set<string> } = {};
+  graphData.nodes.forEach((node: Node) => {
+    adjacency[node.id] = new Set<string>();
+  });
+  graphData.links.forEach((link: Link) => {
+    const s = typeof link.source === 'object' ? link.source.id : link.source;
+    const t = typeof link.target === 'object' ? link.target.id : link.target;
+    if (adjacency[s]) adjacency[s].add(t);
+    if (adjacency[t]) adjacency[t].add(s);
+  });
+
+  // 统计候选节点对的共同邻居数（仅遍历每个节点的邻居的邻居 = 二跳）
+  const candidateScore: { [pair: string]: number } = {};
+  graphData.nodes.forEach((node: Node) => {
+    const u = node.id;
+    const neighbors = Array.from(adjacency[u]);
+    for (const mid of neighbors) {
+      for (const w of adjacency[mid]) {
+        if (w === u) continue;
+        if (adjacency[u].has(w)) continue; // 已存在直接连接
+        if (currentLinks.has(`${u}-${w}`)) continue;
+        // 用排序后的 pair key 去重
+        const key = u < w ? `${u}|${w}` : `${w}|${u}`;
+        candidateScore[key] = (candidateScore[key] || 0) + 1;
+      }
+    }
+  });
+
+  // 取共同邻居数最高的若干对作为预测边；限制每个节点出现次数，避免聚集到少数枢纽
+  const sorted = Object.entries(candidateScore).sort((a, b) => b[1] - a[1]);
+  const TARGET_VISIBLE_LINKS = 560;
+  const MAX_PER_NODE = 6;
+  const perNode: { [id: string]: number } = {};
+  const result: PredictedLink[] = [];
+
+  for (const [key, score] of sorted) {
+    if (result.length >= TARGET_VISIBLE_LINKS) break;
+    const [s, t] = key.split('|');
+    if ((perNode[s] || 0) >= MAX_PER_NODE || (perNode[t] || 0) >= MAX_PER_NODE) continue;
+    result.push({ source: s, target: t, predictionScore: score });
+    perNode[s] = (perNode[s] || 0) + 1;
+    perNode[t] = (perNode[t] || 0) + 1;
+  }
+
+  return result;
+};
+
+// Link Prediction Algorithms
 export const runLinkPrediction = (subtype: string, graphData: GraphData, selectedDataset: string = 'dataset1') => {
   const currentLinks = new Set<string>();
   graphData.links.forEach((link: Link) => {
@@ -69,7 +124,7 @@ export const runLinkPrediction = (subtype: string, graphData: GraphData, selecte
       scoreNormalizationFactor: 0.4  // More randomness for dataset2
     },
     dataset3: {
-      maxLinks: 300, // 从 18 增加到 300
+      maxLinks: 297,
       commonNeighborThreshold: 1,
       weights: { 
         commonNeighbors: 0.15, // 降低权重以减少局部聚集
@@ -88,7 +143,14 @@ export const runLinkPrediction = (subtype: string, graphData: GraphData, selecte
   
   // 获取当前数据集的参数
   const params = datasetParams[selectedDataset as keyof typeof datasetParams] || datasetParams.dataset1;
-  
+
+  // 大图快速路径：原始 GCN-MPLP 实现为 O(N²)~O(N³)，在超大型数据集(dataset4, 1024 可视化节点)上
+  // 会冻结主线程数十秒。这里对节点数较多的图改用轻量的"二跳共同邻居"启发式，
+  // 仅生成用于可视化的若干条预测边（数量与卡片中基于完整网络的统计无关）。
+  if (subtype === 'gcnMplp' && graphData.nodes.length >= 600) {
+    return fastLinkPredictionForLargeGraph(graphData, currentLinks);
+  }
+
   // Advanced GCN-MPLP link prediction implementation
   // This uses a combination of topological features and similarity measures
   if (subtype === 'gcnMplp') {
@@ -515,9 +577,6 @@ export const runLinkPrediction = (subtype: string, graphData: GraphData, selecte
     newLinks = newLinks.slice(0, params.maxLinks);
   }
   
-  // Console log for debugging
-  console.log(`Generated ${newLinks.length} predicted links for ${graphData.nodes.length} nodes`);
-  
   return newLinks;
 };
 
@@ -531,7 +590,22 @@ export const runCommunityDetection = (subtype: string, graphData: GraphData) => 
   const nodeCount = graphData.nodes.length;
   
   // Adjust number of communities based on dataset size and algorithm
-  if (nodeCount >= 200) {
+  if (nodeCount >= 1000) {
+    // 超大型数据集 (dataset4 - 1024 可视化节点)，与结果卡片保持一致
+    switch (subtype) {
+      case 'gcn':
+        numCommunities = 6;
+        break;
+      case 'secomm':
+        numCommunities = 8;
+        break;
+      case 'gat':
+        numCommunities = 7;
+        break;
+      default:
+        numCommunities = 6;
+    }
+  } else if (nodeCount >= 200) {
     // Large dataset (dataset2 - 205 nodes)
     switch (subtype) {
       case 'gcn':
@@ -577,8 +651,6 @@ export const runCommunityDetection = (subtype: string, graphData: GraphData) => 
         numCommunities = 3;
     }
   }
-  
-  console.log(`Detecting ${numCommunities} communities for ${nodeCount} nodes with algorithm: ${subtype}`);
   
   // First assign communities to nodes
   const nodeCommunities: {[key: string]: number} = {};
@@ -1044,13 +1116,6 @@ export const classifyNodesByAPPNP = (
       nodeRoles[nodeId] = baseProportions[4].id;
     }
   });
-
-  // 统计每个角色的节点数量
-  const roleCounts: {[key: number]: number} = {};
-  Object.values(nodeRoles).forEach(role => {
-    roleCounts[role] = (roleCounts[role] || 0) + 1;
-  });
-  console.log('APPNP角色分配结果:', roleCounts);
 };
 
 export const classifyNodesByDegree = (

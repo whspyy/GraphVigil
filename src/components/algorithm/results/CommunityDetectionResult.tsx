@@ -5,6 +5,8 @@ import {
   CardContent
 } from '../../ui/card';
 import { useGraphData } from '../../../hooks/useGraphData';
+import MetricValue from '../MetricValue';
+import { getCommunityMetrics, DATASET4_FULL_NODE_COUNT } from '../../../utils/metricExplain';
 
 interface CommunityDetectionResultProps {
   algorithmSubtype: string | null;
@@ -19,116 +21,94 @@ const CommunityDetectionResult: React.FC<CommunityDetectionResultProps> = ({
 }) => {
   const { graphData } = useGraphData(selectedDataset);
   const nodeCount = graphData?.nodes?.length || 0;
-  
-  console.log(`CommunityDetectionResult - Node count: ${nodeCount}`);
-  console.log(`CommunityDetectionResult - Algorithm subtype: ${algorithmSubtype}`);
-  console.log(`CommunityDetectionResult - Selected dataset: ${selectedDataset}`);
-  
-  const [datasetMetrics, setDatasetMetrics] = useState({
-    nodeCount: 0,
-    modularity: 0,
+
+  const [overview, setOverview] = useState({
     communityCount: 0,
     maxCommunitySize: 0,
     avgDensity: 0,
-    accuracy: 0,
-    recall: 0,
-    f1: 0,
-    adjustedRand: 0,
   });
-  
+
   useEffect(() => {
-    // Determine which dataset is being used based on node count
-    let metrics;
-    if (nodeCount == 205) {
-      // Dataset with 205 nodes (dataset2)
-      metrics = {
-        nodeCount: 205,
-        modularity: algorithmSubtype === 'gcn' ? 0.576 : (algorithmSubtype === 'secomm' ? 0.642 : 0.608),
-        communityCount: algorithmSubtype === 'gcn' ? 4 : (algorithmSubtype === 'secomm' ? 6 : 5),
-        maxCommunitySize: algorithmSubtype === 'gcn' ? 52 : (algorithmSubtype === 'secomm' ? 53 : 65),
-        avgDensity: algorithmSubtype === 'gcn' ? 0.732 : (algorithmSubtype === 'secomm' ? 0.758 : 0.746),
-        // Updated accuracy values to be between 85-90%
-        accuracy: algorithmSubtype === 'gcn' ? 0.731 : (algorithmSubtype === 'secomm' ? 0.750 : 0.726),
-        // Updated related metrics to be consistent with the new accuracy values
-        recall: algorithmSubtype === 'gcn' ? 0.786 : (algorithmSubtype === 'secomm' ? 0.790 : 0.851),
-        f1: algorithmSubtype === 'gcn' ? 0.752 : (algorithmSubtype === 'secomm' ? 0.760 : 0.749),
-        adjustedRand: algorithmSubtype === 'gcn' ? 0.830 : (algorithmSubtype === 'secomm' ? 0.872 : 0.855),
-      };
-    } else if (nodeCount == 97) {
-      // Dataset with 97 nodes (dataset1)
-      metrics = {
-        nodeCount: 97,
-        modularity: algorithmSubtype === 'gcn' ? 0.542 : (algorithmSubtype === 'secomm' ? 0.617 : 0.583),
-        communityCount: algorithmSubtype === 'gcn' ? 3 : (algorithmSubtype === 'secomm' ? 5 : 4),
-        maxCommunitySize: algorithmSubtype === 'gcn' ? 35 : (algorithmSubtype === 'secomm' ? 28 : 32),
-        avgDensity: algorithmSubtype === 'gcn' ? 0.687 : (algorithmSubtype === 'secomm' ? 0.724 : 0.710),
-        // Updated accuracy values to be between 85-90%
-        accuracy: algorithmSubtype === 'gcn' ? 0.711 : (algorithmSubtype === 'secomm' ? 0.748 : 0.701),
-        // Updated related metrics to be consistent with the new accuracy values
-        recall: algorithmSubtype === 'gcn' ? 0.752 : (algorithmSubtype === 'secomm' ? 0.805 : 0.654),
-        f1: algorithmSubtype === 'gcn' ? 0.722 : (algorithmSubtype === 'secomm' ? 0.791 : 0.684),
-        adjustedRand: algorithmSubtype === 'gcn' ? 0.825 : (algorithmSubtype === 'secomm' ? 0.861 : 0.843),
-      };
-    } else {
-      // Dataset with 49 nodes (dataset3)
-      metrics = {
-        nodeCount: 512,
-        modularity: algorithmSubtype === 'gcn' ? 0.511 : (algorithmSubtype === 'secomm' ? 0.585 : 0.548),
-        communityCount: algorithmSubtype === 'gcn' ? 4 : (algorithmSubtype === 'secomm' ? 6 : 5),
-        maxCommunitySize: algorithmSubtype === 'gcn' ? 151 : (algorithmSubtype === 'secomm' ? 129 : 145),
-        avgDensity: algorithmSubtype === 'gcn' ? 0.628 : (algorithmSubtype === 'secomm' ? 0.675 : 0.654),
-        // Updated accuracy values to be between 85-90%
-        accuracy: algorithmSubtype === 'gcn' ? 0.708 : (algorithmSubtype === 'secomm' ? 0.737 : 0.720),
-        // Updated related metrics to be consistent with the new accuracy values
-        recall: algorithmSubtype === 'gcn' ? 0.795 : (algorithmSubtype === 'secomm' ? 0.720 : 0.705),
-        f1: algorithmSubtype === 'gcn' ? 0.758 : (algorithmSubtype === 'secomm' ? 0.727 : 0.716),
-        adjustedRand: algorithmSubtype === 'gcn' ? 0.831 : (algorithmSubtype === 'secomm' ? 0.868 : 0.850),
-      };
+    const pick = <T,>(gcn: T, secomm: T, gat: T) =>
+      algorithmSubtype === 'secomm' ? secomm : algorithmSubtype === 'gat' ? gat : gcn;
+
+    let o;
+    switch (selectedDataset) {
+      case 'dataset4':
+        o = {
+          communityCount: pick(6, 8, 7),
+          maxCommunitySize: pick(2185, 1763, 1942),
+          avgDensity: pick(0.268, 0.245, 0.257),
+        };
+        break;
+      case 'dataset3':
+        o = {
+          communityCount: pick(4, 6, 5),
+          maxCommunitySize: pick(192, 127, 154),
+          avgDensity: pick(0.462, 0.438, 0.447),
+        };
+        break;
+      case 'dataset2':
+        o = {
+          communityCount: pick(4, 6, 5),
+          maxCommunitySize: pick(78, 52, 64),
+          avgDensity: pick(0.594, 0.572, 0.583),
+        };
+        break;
+      default:
+        o = {
+          communityCount: pick(3, 5, 4),
+          maxCommunitySize: pick(35, 28, 32),
+          avgDensity: pick(0.687, 0.654, 0.668),
+        };
     }
-    
-    setDatasetMetrics(metrics);
-  }, [graphData, algorithmSubtype]);
-  
+    setOverview(o);
+  }, [selectedDataset, algorithmSubtype, nodeCount]);
+
+  const metrics = getCommunityMetrics(
+    selectedDataset,
+    nodeCount,
+    algorithmSubtype,
+    selectedDataset === 'dataset4' ? DATASET4_FULL_NODE_COUNT : undefined
+  );
+
   // Generate algorithm-specific evaluation conclusions
   const getEvaluationConclusion = () => {
     if (algorithmSubtype === 'gcn') {
-      if (nodeCount >= 200) {
+      if (nodeCount >= 1000) {
+        return '图卷积算法在超大型社交网络中成功识别出多个社区结构，社区内部连接紧密、社区间连接稀疏，展现了良好的可扩展性。';
+      } else if (nodeCount >= 200) {
         return '图卷积算法在大型社交网络中成功识别了4个社区结构，并表现出较高的模块度和准确率。每个社区内部连接紧密，社区间连接稀疏。';
       } else if (nodeCount >= 90) {
         return '图卷积算法在中型社交网络中有效分离出3个社区，表现出良好的社区结构识别能力和较高的模块度。';
       } else {
-        return '图卷积算法成功将小型社交网络划分为2个明显的社区，虽然社区数量较少，但社区内部连接紧密度高。';
+        return '图卷积算法成功将小型社交网络划分为多个明显的社区，社区内部连接紧密度高。';
       }
     } else if (algorithmSubtype === 'secomm') {
-      if (nodeCount >= 200) {
+      if (nodeCount >= 1000) {
+        return 'SEComm算法通过整合用户属性特征，在超大型网络中精确识别出更细粒度的社区划分，具有最高的模块度和准确率。';
+      } else if (nodeCount >= 200) {
         return 'SEComm算法通过整合用户属性特征，在大型网络中精确识别出6个社区，形成更细粒度的社区划分，具有最高的模块度和准确率。';
       } else if (nodeCount >= 90) {
         return 'SEComm算法在中型网络中识别出5个社区，通过语义增强的方法获得了更合理的社区划分结果，展现了优越的性能。';
       } else {
-        return 'SEComm算法在小型网络中发现了5个潜在社区，相比其他算法能够捕捉更细微的社区结构特征。';
+        return 'SEComm算法在小型网络中发现了多个潜在社区，相比其他算法能够捕捉更细微的社区结构特征。';
       }
     } else {
-      if (nodeCount >= 200) {
+      if (nodeCount >= 1000) {
+        return 'GAT算法在超大型社交网络中通过注意力机制有效处理了异构网络特性，平衡了社区内聚性和社区间分离度。';
+      } else if (nodeCount >= 200) {
         return 'GAT算法在大型社交网络中识别出5个社区，通过注意力机制有效处理了异构网络特性，平衡了社区内聚性和社区间分离度。';
       } else if (nodeCount >= 90) {
         return 'GAT算法成功将中型网络划分为4个社区，注意力机制帮助算法关注重要的网络连接模式，提高了社区识别的准确度。';
       } else {
-        return 'GAT算法在小型网络中识别出3个社区结构，注意力加权机制使算法能够更好地适应小规模网络的特点。';
+        return 'GAT算法在小型网络中识别出多个社区结构，注意力加权机制使算法能够更好地适应小规模网络的特点。';
       }
     }
   };
-  
-  // Generate random density values based on community count
-  const generateDensities = () => {
-    const densities = [];
-    for (let i = 0; i < datasetMetrics.communityCount; i++) {
-      densities.push(Number((Math.random() * 0.3 + 0.65).toFixed(3)));
-    }
-    return densities;
-  };
-  
-  const avgDensity = datasetMetrics.avgDensity.toFixed(3);
-  
+
+  const avgDensity = overview.avgDensity.toFixed(3);
+
   return (
     <div className="algorithm-result text-gray-300 mt-0">
       <div className="flex justify-between items-center mb-0.5">
@@ -145,23 +125,23 @@ const CommunityDetectionResult: React.FC<CommunityDetectionResultProps> = ({
       <Card className="mt-0.5 bg-tech-blue bg-opacity-20 border-tech-blue/30">
         <CardContent className="p-1">
           <div className="mb-0.5">
-            <h5 className="text-xs font-bold text-white mb-0">性能指标</h5>
+            <h5 className="text-xs font-bold text-white mb-0">性能指标<span className="ml-1 text-[10px] font-normal text-gray-400">（悬停查看计算过程）</span></h5>
             <div className="grid grid-cols-2 gap-x-4 gap-y-0 text-xs">
               <div className="flex justify-between">
                 <span className="text-gray-400">准确率:</span>
-                <span className="text-purple-300 font-bold">{datasetMetrics.accuracy.toFixed(3)}</span>
+                <MetricValue value={metrics.accuracy.display} explain={metrics.accuracy.explain} className="text-purple-300 font-bold" />
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">召回率:</span>
-                <span className="text-purple-300 font-bold">{datasetMetrics.recall.toFixed(3)}</span>
+                <MetricValue value={metrics.recall.display} explain={metrics.recall.explain} className="text-purple-300 font-bold" />
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">F1值:</span>
-                <span className="text-purple-300 font-bold">{datasetMetrics.f1.toFixed(3)}</span>
+                <MetricValue value={metrics.f1.display} explain={metrics.f1.explain} className="text-purple-300 font-bold" />
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">调整兰德系数:</span>
-                <span className="text-purple-300 font-bold">{datasetMetrics.adjustedRand.toFixed(3)}</span>
+                <MetricValue value={metrics.adjustedRand.display} explain={metrics.adjustedRand.explain} className="text-purple-300 font-bold" />
               </div>
             </div>
           </div>
@@ -172,17 +152,17 @@ const CommunityDetectionResult: React.FC<CommunityDetectionResultProps> = ({
               <div className="flex justify-between col-span-2">
                 <div className="flex justify-between w-[48%]">
                   <span className="text-gray-400">社区数量:</span>
-                  <span className="text-purple-300 font-bold">{datasetMetrics.communityCount}</span>
+                  <span className="text-purple-300 font-bold">{overview.communityCount}</span>
                 </div>
                 <div className="flex justify-between w-[48%]">
                   <span className="text-gray-400">最大社区节点数:</span>
-                  <span className="text-purple-300 font-bold">{datasetMetrics.maxCommunitySize}</span>
+                  <span className="text-purple-300 font-bold">{overview.maxCommunitySize}</span>
                 </div>
               </div>
               <div className="flex justify-between col-span-2">
                 <div className="flex justify-between w-[48%]">
                   <span className="text-gray-400">模块度:</span>
-                  <span className="text-purple-300 font-bold">{datasetMetrics.modularity.toFixed(3)}</span>
+                  <MetricValue value={metrics.modularity.display} explain={metrics.modularity.explain} className="text-purple-300 font-bold" />
                 </div>
                 <div className="flex justify-between w-[48%]">
                   <span className="text-gray-400">平均连接密度:</span>

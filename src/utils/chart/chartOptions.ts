@@ -5,10 +5,12 @@ import { processNode } from './nodeHelper';
 import { processLink } from './linkHelper';
 import { generateCategories } from './categoryHelper';
 import { getChartColors } from './colorSchemes';
+import { graphTooltipFormatter } from './tooltipHelper';
 
 export const createChartOption = (
   displayData: any,
   selectedUser: string | null,
+  selectedDataset: string,
   categories: {name: string}[],
   predictedLinks: any[],
   highlightNodes: Set<string>,
@@ -65,6 +67,16 @@ export const createChartOption = (
       left: 'center',
       type: 'scroll'
     }],
+    tooltip: {
+      trigger: 'item',
+      confine: true,
+      enterable: false,
+      backgroundColor: 'rgba(11, 18, 32, 0.95)',
+      borderColor: 'rgba(82, 112, 198, 0.5)',
+      borderWidth: 1,
+      textStyle: { color: '#e5e7eb', fontSize: 12 },
+      formatter: graphTooltipFormatter
+    },
     animationDurationUpdate: 1500,
     animationEasingUpdate: 'cubicInOut',
     series: [{
@@ -72,10 +84,10 @@ export const createChartOption = (
       type: 'graph',
       layout: 'force', // Always use force layout, even for community layout
       data: displayData.nodes.map((node: any) => 
-        processNode(node, selectedUser, highlightNodes, communities, roles, algorithmType, algorithmSubtype, isCommunityLayout, communityCenters, colors)
+        processNode(node, selectedUser, highlightNodes, selectedDataset, communities, roles, algorithmType, algorithmSubtype, isCommunityLayout, communityCenters, colors)
       ),
       links: displayData.links.map((link: any) => 
-        processLink(link, highlightEdges, predictedLinks, algorithmType)
+        processLink(link, highlightEdges, predictedLinks, algorithmType, selectedDataset)
       ),
       categories: generateCategories(algorithmType, colors, categories, algorithmSubtype),
       roam: true,

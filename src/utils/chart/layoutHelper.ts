@@ -9,10 +9,13 @@ export const calculateCommunityCenters = (communities: {[key: string]: number}) 
   
   // Count how many communities we have
   const communityCount = Math.max(...Object.values(communities)) + 1;
+  const nodeCount = Object.keys(communities).length;
   
-  // Define positions for distinct community clusters (in a circle formation)
-  // Reduced radius from 300 to 180 to make communities closer to each other
-  const radius = 180; // Reduced from 300 to bring communities closer together
+  // Define positions for distinct community clusters (in a circle formation).
+  // For very large graphs (e.g. the 1024-node dataset) the default radius packs
+  // all nodes into a tiny disc, so the force layout explodes off-screen. Scale the
+  // radius up for large graphs; small datasets keep the original radius unchanged.
+  const radius = nodeCount >= 1000 ? 520 : 180;
   
   for (let i = 0; i < communityCount; i++) {
     const angle = (i / communityCount) * 2 * Math.PI;
@@ -48,7 +51,13 @@ export const calculateNodePosition = (nodeId: string, communities: {[key: string
 };
 
 // Implements a BA-model inspired edge generation for community structure
-export const generateBAModelCommunityEdges = (nodeIds: string[]): [string, string][] => {
+export const generateBAModelCommunityEdges = (
+  nodeIds: string[],
+  options?: {
+    densityFactor?: number;
+    extraEdgesFactor?: number;
+  }
+): [string, string][] => {
   if (nodeIds.length <= 1) return [];
   
   // Initialize with a small connected network (usually 2-3 nodes)
@@ -68,9 +77,10 @@ export const generateBAModelCommunityEdges = (nodeIds: string[]): [string, strin
     nodeDegrees[nodeId] = initialNodeCount - 1; // Each initial node connected to all others
   });
   
-  // Density factor - lower values create sparser networks
-  // Further reducing this value to create even sparser graphs
-  const densityFactor = 0.5; // Reduced from 0.7 to 0.5
+  // Density factor - lower values create sparser networks.
+  // Keep the historical default for normal datasets; callers can override it
+  // for the ultra-large dataset only.
+  const densityFactor = options?.densityFactor ?? 0.5;
   
   // For remaining nodes, use preferential attachment
   for (let i = initialNodeCount; i < nodeIds.length; i++) {
@@ -106,9 +116,8 @@ export const generateBAModelCommunityEdges = (nodeIds: string[]): [string, strin
     }
   }
   
-  // Add some random "local bridges" for more realistic community structure (small world property)
-  // Further reducing number of extra edges for even less density
-  const extraEdgesFactor = 0.03; // Reduced from 0.05 to 0.03 (40% fewer extra edges)
+  // Add some random "local bridges" for more realistic community structure (small world property).
+  const extraEdgesFactor = options?.extraEdgesFactor ?? 0.03;
   const extraEdges = Math.floor(nodeIds.length * extraEdgesFactor);
   
   for (let i = 0; i < extraEdges; i++) {
