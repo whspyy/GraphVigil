@@ -1,36 +1,60 @@
-# Welcome to GraphVigil
+# GraphVigil
 
-**GraphVigil**: A Web Application Combining Graph Analysis with Vigilance against Network Violence
+GraphVigil 是一个面向网络暴力场景的图分析可视化系统，围绕社交网络中的关系演化、群组结构和关键角色识别，提供交互式演示与结果展示能力。
 
-- Shanghai Jiao Tong University
-- AI Security Lab
-- Xie Yuanbo
+系统当前支持多个数据集切换，并包含超大型社交网络数据集的代表性可视化展示。主界面以网络图为中心，配合结果卡片、用户信息面板和工具集弹窗，用于展示不同算法在网络分析任务中的运行效果。
 
-- Created at 2025-04-24
+**主要功能**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes.
+- 链接预测：展示潜在新连接及相关指标
+- 群组划分：展示社区数量、最大社区规模、模块度等结果
+- 角色分类：展示不同用户角色的识别结果
+- 多数据集切换：支持多组网暴事件社交网络数据
+- 工具集弹窗：支持算法、数据集选择，以及日志和表格结果展示
 
-The only requirement is having Node.js & npm installed.
+**界面说明**
 
-Follow these steps:
+- 中央区域：网络图可视化
+- 左侧面板：数据集选择、算法运行与结果卡片
+- 右侧面板：用户列表与用户详情
+- 右上角工具集：独立测试窗口，用于查看日志、指标和预测结果表
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone https://github.com/whspyy/GraphVigil.git
+**技术栈**
 
-# Step 2: Navigate to the project directory.
-cd ./GraphVigil
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-This project is built with:
-
-- Vite
-- TypeScript
 - React
+- TypeScript
+- Vite
+- ECharts
 - shadcn-ui
 - Tailwind CSS
+
+**运行环境**
+
+- Node.js
+- npm
+
+**本地启动**
+
+```sh
+npm install
+npm run dev
+```
+
+**常用命令**
+
+```sh
+npm run build
+npm run lint
+npm run preview
+```
+
+**目录结构**
+
+```text
+src/
+  components/   UI 组件与结果面板
+  hooks/        图数据与算法执行逻辑
+  pages/        页面入口
+  utils/        指标计算、图布局、算法工具函数
+  data/         数据集与工具集示例数据
+```
