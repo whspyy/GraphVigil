@@ -1,0 +1,366 @@
+﻿====== 基于链接预测的网暴群组结构挖掘 ======
+测试数据集: 网暴数据集一
+算法: 算法三：基于融合GCN和DNN的双重编码器的群组划分算法
+运行设备: cuda
+节点数: 446
+边数: 27180
+节点特征维度: 480
+社区数量: 13
+base_model: GCNConv
+DNN特征编码: 启用
+deep_hidden: 64
+max_epochs: 500
+patience: 50
+开始训练...
+Epoch: 001 full_loss: 7.94628 grace_loss: 7.93049 loss1: 0.01237 loss2: 0.02284
+Epoch: 002 full_loss: 7.94197 grace_loss: 7.92655 loss1: 0.01197 loss2: 0.02302
+Epoch: 003 full_loss: 7.92493 grace_loss: 7.90932 loss1: 0.01218 loss2: 0.02290
+Epoch: 004 full_loss: 7.90957 grace_loss: 7.89395 loss1: 0.01219 loss2: 0.02284
+Epoch: 005 full_loss: 7.89371 grace_loss: 7.87846 loss1: 0.01187 loss2: 0.02256
+Epoch: 006 full_loss: 7.88003 grace_loss: 7.86457 loss1: 0.01205 loss2: 0.02273
+Epoch: 007 full_loss: 7.86919 grace_loss: 7.85412 loss1: 0.01172 loss2: 0.02241
+Epoch: 008 full_loss: 7.85263 grace_loss: 7.83753 loss1: 0.01177 loss2: 0.02221
+Epoch: 009 full_loss: 7.84720 grace_loss: 7.83179 loss1: 0.01205 loss2: 0.02245
+Epoch: 010 full_loss: 7.82535 grace_loss: 7.81013 loss1: 0.01190 loss2: 0.02211
+Accuracy: 0.504814472338290 Recall@1: 0.390682997252262 F1: 0.389473332285644
+Epoch: 011 full_loss: 7.81810 grace_loss: 7.80310 loss1: 0.01172 loss2: 0.02185
+Epoch: 012 full_loss: 7.80197 grace_loss: 7.78680 loss1: 0.01185 loss2: 0.02219
+Epoch: 013 full_loss: 7.78859 grace_loss: 7.77385 loss1: 0.01145 loss2: 0.02186
+Epoch: 014 full_loss: 7.76942 grace_loss: 7.75469 loss1: 0.01149 loss2: 0.02159
+Epoch: 015 full_loss: 7.75779 grace_loss: 7.74297 loss1: 0.01151 loss2: 0.02202
+Epoch: 016 full_loss: 7.74263 grace_loss: 7.72782 loss1: 0.01153 loss2: 0.02188
+Epoch: 017 full_loss: 7.73542 grace_loss: 7.72086 loss1: 0.01132 loss2: 0.02156
+Epoch: 018 full_loss: 7.72304 grace_loss: 7.70825 loss1: 0.01153 loss2: 0.02176
+Epoch: 019 full_loss: 7.70433 grace_loss: 7.68970 loss1: 0.01138 loss2: 0.02162
+Epoch: 020 full_loss: 7.69472 grace_loss: 7.68005 loss1: 0.01144 loss2: 0.02151
+Accuracy: 0.526564617486949 Recall@1: 0.400753561315502 F1: 0.408703963552456
+Epoch: 021 full_loss: 7.68403 grace_loss: 7.66961 loss1: 0.01117 loss2: 0.02163
+Epoch: 022 full_loss: 7.67467 grace_loss: 7.66030 loss1: 0.01115 loss2: 0.02148
+Epoch: 023 full_loss: 7.65607 grace_loss: 7.64179 loss1: 0.01104 loss2: 0.02156
+Epoch: 024 full_loss: 7.64097 grace_loss: 7.62641 loss1: 0.01136 loss2: 0.02128
+Epoch: 025 full_loss: 7.62625 grace_loss: 7.61197 loss1: 0.01115 loss2: 0.02092
+Epoch: 026 full_loss: 7.61350 grace_loss: 7.59923 loss1: 0.01107 loss2: 0.02135
+Epoch: 027 full_loss: 7.60245 grace_loss: 7.58827 loss1: 0.01102 loss2: 0.02101
+Epoch: 028 full_loss: 7.59614 grace_loss: 7.58185 loss1: 0.01119 loss2: 0.02067
+Epoch: 029 full_loss: 7.58135 grace_loss: 7.56698 loss1: 0.01123 loss2: 0.02097
+Epoch: 030 full_loss: 7.56871 grace_loss: 7.55462 loss1: 0.01093 loss2: 0.02111
+Accuracy: 0.534428913235015 Recall@1: 0.421195293750191 F1: 0.421613374420611
+Epoch: 031 full_loss: 7.54946 grace_loss: 7.53552 loss1: 0.01083 loss2: 0.02074
+Epoch: 032 full_loss: 7.53680 grace_loss: 7.52261 loss1: 0.01107 loss2: 0.02082
+Epoch: 033 full_loss: 7.53063 grace_loss: 7.51654 loss1: 0.01095 loss2: 0.02096
+Epoch: 034 full_loss: 7.52180 grace_loss: 7.50785 loss1: 0.01081 loss2: 0.02094
+Epoch: 035 full_loss: 7.50865 grace_loss: 7.49459 loss1: 0.01098 loss2: 0.02050
+Epoch: 036 full_loss: 7.49723 grace_loss: 7.48338 loss1: 0.01080 loss2: 0.02037
+Epoch: 037 full_loss: 7.48598 grace_loss: 7.47229 loss1: 0.01067 loss2: 0.02022
+Epoch: 038 full_loss: 7.46841 grace_loss: 7.45478 loss1: 0.01057 loss2: 0.02037
+Epoch: 039 full_loss: 7.45755 grace_loss: 7.44400 loss1: 0.01050 loss2: 0.02036
+Epoch: 040 full_loss: 7.44284 grace_loss: 7.42918 loss1: 0.01064 loss2: 0.02011
+Accuracy: 0.563608690786187 Recall@1: 0.432869249475294 F1: 0.418762585235342
+Epoch: 041 full_loss: 7.43712 grace_loss: 7.42353 loss1: 0.01060 loss2: 0.01995
+Epoch: 042 full_loss: 7.41925 grace_loss: 7.40570 loss1: 0.01049 loss2: 0.02041
+Epoch: 043 full_loss: 7.40544 grace_loss: 7.39206 loss1: 0.01036 loss2: 0.02012
+Epoch: 044 full_loss: 7.39812 grace_loss: 7.38472 loss1: 0.01040 loss2: 0.02004
+Epoch: 045 full_loss: 7.38202 grace_loss: 7.36838 loss1: 0.01065 loss2: 0.01993
+Epoch: 046 full_loss: 7.37775 grace_loss: 7.36416 loss1: 0.01062 loss2: 0.01986
+Epoch: 047 full_loss: 7.35631 grace_loss: 7.34321 loss1: 0.01008 loss2: 0.02010
+Epoch: 048 full_loss: 7.34358 grace_loss: 7.33035 loss1: 0.01030 loss2: 0.01954
+Epoch: 049 full_loss: 7.33772 grace_loss: 7.32458 loss1: 0.01017 loss2: 0.01980
+Epoch: 050 full_loss: 7.32935 grace_loss: 7.31611 loss1: 0.01033 loss2: 0.01943
+Accuracy: 0.564898588940047 Recall@1: 0.446361111340264 F1: 0.404302652731968
+Epoch: 051 full_loss: 7.31084 grace_loss: 7.29750 loss1: 0.01036 loss2: 0.01985
+Epoch: 052 full_loss: 7.30361 grace_loss: 7.29052 loss1: 0.01012 loss2: 0.01975
+Epoch: 053 full_loss: 7.28978 grace_loss: 7.27690 loss1: 0.00998 loss2: 0.01931
+Epoch: 054 full_loss: 7.27807 grace_loss: 7.26489 loss1: 0.01030 loss2: 0.01917
+Epoch: 055 full_loss: 7.26562 grace_loss: 7.25246 loss1: 0.01023 loss2: 0.01952
+Epoch: 056 full_loss: 7.25242 grace_loss: 7.23977 loss1: 0.00974 loss2: 0.01940
+Epoch: 057 full_loss: 7.24126 grace_loss: 7.22831 loss1: 0.01013 loss2: 0.01881
+Epoch: 058 full_loss: 7.22777 grace_loss: 7.21523 loss1: 0.00965 loss2: 0.01925
+Epoch: 059 full_loss: 7.22556 grace_loss: 7.21301 loss1: 0.00969 loss2: 0.01904
+Epoch: 060 full_loss: 7.20849 grace_loss: 7.19603 loss1: 0.00963 loss2: 0.01893
+Accuracy: 0.581703847607770 Recall@1: 0.452430992938715 F1: 0.422320493468344
+Epoch: 061 full_loss: 7.20461 grace_loss: 7.19203 loss1: 0.00969 loss2: 0.01920
+Epoch: 062 full_loss: 7.18610 grace_loss: 7.17356 loss1: 0.00977 loss2: 0.01847
+Epoch: 063 full_loss: 7.17892 grace_loss: 7.16648 loss1: 0.00958 loss2: 0.01909
+Epoch: 064 full_loss: 7.16567 grace_loss: 7.15308 loss1: 0.00978 loss2: 0.01874
+Epoch: 065 full_loss: 7.15144 grace_loss: 7.13883 loss1: 0.00981 loss2: 0.01868
+Epoch: 066 full_loss: 7.14960 grace_loss: 7.13749 loss1: 0.00937 loss2: 0.01829
+Epoch: 067 full_loss: 7.13293 grace_loss: 7.12084 loss1: 0.00935 loss2: 0.01830
+Epoch: 068 full_loss: 7.12332 grace_loss: 7.11080 loss1: 0.00972 loss2: 0.01861
+Epoch: 069 full_loss: 7.11069 grace_loss: 7.09838 loss1: 0.00956 loss2: 0.01830
+Epoch: 070 full_loss: 7.09899 grace_loss: 7.08672 loss1: 0.00949 loss2: 0.01852
+Accuracy: 0.603621085485535 Recall@1: 0.445670373994078 F1: 0.417815130388389
+Epoch: 071 full_loss: 7.08683 grace_loss: 7.07453 loss1: 0.00952 loss2: 0.01857
+Epoch: 072 full_loss: 7.08473 grace_loss: 7.07257 loss1: 0.00945 loss2: 0.01804
+Epoch: 073 full_loss: 7.06498 grace_loss: 7.05303 loss1: 0.00922 loss2: 0.01821
+Epoch: 074 full_loss: 7.05454 grace_loss: 7.04267 loss1: 0.00919 loss2: 0.01792
+Epoch: 075 full_loss: 7.04289 grace_loss: 7.03112 loss1: 0.00909 loss2: 0.01785
+Epoch: 076 full_loss: 7.03833 grace_loss: 7.02636 loss1: 0.00933 loss2: 0.01758
+Epoch: 077 full_loss: 7.02447 grace_loss: 7.01276 loss1: 0.00900 loss2: 0.01810
+Epoch: 078 full_loss: 7.01365 grace_loss: 7.00171 loss1: 0.00929 loss2: 0.01771
+Epoch: 079 full_loss: 7.00500 grace_loss: 6.99336 loss1: 0.00903 loss2: 0.01744
+Epoch: 080 full_loss: 6.99710 grace_loss: 6.98564 loss1: 0.00879 loss2: 0.01776
+Accuracy: 0.611026815524447 Recall@1: 0.467997816127860 F1: 0.431135681545447
+Epoch: 081 full_loss: 6.98485 grace_loss: 6.97332 loss1: 0.00894 loss2: 0.01727
+Epoch: 082 full_loss: 6.98061 grace_loss: 6.96899 loss1: 0.00903 loss2: 0.01728
+Epoch: 083 full_loss: 6.95965 grace_loss: 6.94821 loss1: 0.00879 loss2: 0.01770
+Epoch: 084 full_loss: 6.94964 grace_loss: 6.93817 loss1: 0.00885 loss2: 0.01750
+Epoch: 085 full_loss: 6.94865 grace_loss: 6.93714 loss1: 0.00889 loss2: 0.01747
+Epoch: 086 full_loss: 6.92892 grace_loss: 6.91743 loss1: 0.00891 loss2: 0.01726
+Epoch: 087 full_loss: 6.92314 grace_loss: 6.91173 loss1: 0.00888 loss2: 0.01691
+Epoch: 088 full_loss: 6.92076 grace_loss: 6.90936 loss1: 0.00880 loss2: 0.01736
+Epoch: 089 full_loss: 6.91068 grace_loss: 6.89959 loss1: 0.00857 loss2: 0.01680
+Epoch: 090 full_loss: 6.89249 grace_loss: 6.88147 loss1: 0.00845 loss2: 0.01709
+Accuracy: 0.612870284510679 Recall@1: 0.479661490273097 F1: 0.448073065865170
+Epoch: 091 full_loss: 6.88094 grace_loss: 6.86977 loss1: 0.00866 loss2: 0.01678
+Epoch: 092 full_loss: 6.87256 grace_loss: 6.86137 loss1: 0.00871 loss2: 0.01658
+Epoch: 093 full_loss: 6.86209 grace_loss: 6.85108 loss1: 0.00853 loss2: 0.01655
+Epoch: 094 full_loss: 6.85813 grace_loss: 6.84711 loss1: 0.00852 loss2: 0.01669
+Epoch: 095 full_loss: 6.84967 grace_loss: 6.83893 loss1: 0.00824 loss2: 0.01665
+Epoch: 096 full_loss: 6.83843 grace_loss: 6.82752 loss1: 0.00845 loss2: 0.01639
+Epoch: 097 full_loss: 6.82597 grace_loss: 6.81521 loss1: 0.00827 loss2: 0.01658
+Epoch: 098 full_loss: 6.81312 grace_loss: 6.80238 loss1: 0.00826 loss2: 0.01653
+Epoch: 099 full_loss: 6.80858 grace_loss: 6.79794 loss1: 0.00820 loss2: 0.01627
+Epoch: 100 full_loss: 6.79538 grace_loss: 6.78497 loss1: 0.00801 loss2: 0.01603
+Accuracy: 0.630503042575009 Recall@1: 0.478728293131473 F1: 0.445106146085971
+Epoch: 101 full_loss: 6.79490 grace_loss: 6.78442 loss1: 0.00804 loss2: 0.01626
+Epoch: 102 full_loss: 6.78187 grace_loss: 6.77128 loss1: 0.00819 loss2: 0.01596
+Epoch: 103 full_loss: 6.76994 grace_loss: 6.75958 loss1: 0.00796 loss2: 0.01602
+Epoch: 104 full_loss: 6.75666 grace_loss: 6.74637 loss1: 0.00791 loss2: 0.01585
+Epoch: 105 full_loss: 6.74951 grace_loss: 6.73924 loss1: 0.00790 loss2: 0.01575
+Epoch: 106 full_loss: 6.74766 grace_loss: 6.73708 loss1: 0.00821 loss2: 0.01579
+Epoch: 107 full_loss: 6.73160 grace_loss: 6.72137 loss1: 0.00788 loss2: 0.01568
+Epoch: 108 full_loss: 6.72873 grace_loss: 6.71857 loss1: 0.00783 loss2: 0.01554
+Epoch: 109 full_loss: 6.71415 grace_loss: 6.70411 loss1: 0.00767 loss2: 0.01574
+Epoch: 110 full_loss: 6.70458 grace_loss: 6.69450 loss1: 0.00772 loss2: 0.01565
+Accuracy: 0.636336475937948 Recall@1: 0.493516322025418 F1: 0.451467679834397
+Epoch: 111 full_loss: 6.70066 grace_loss: 6.69032 loss1: 0.00797 loss2: 0.01582
+Epoch: 112 full_loss: 6.69664 grace_loss: 6.68639 loss1: 0.00787 loss2: 0.01594
+Epoch: 113 full_loss: 6.68406 grace_loss: 6.67383 loss1: 0.00793 loss2: 0.01534
+Epoch: 114 full_loss: 6.67453 grace_loss: 6.66442 loss1: 0.00784 loss2: 0.01518
+Epoch: 115 full_loss: 6.66369 grace_loss: 6.65380 loss1: 0.00754 loss2: 0.01562
+Epoch: 116 full_loss: 6.65870 grace_loss: 6.64870 loss1: 0.00765 loss2: 0.01565
+Epoch: 117 full_loss: 6.65105 grace_loss: 6.64101 loss1: 0.00776 loss2: 0.01518
+Epoch: 118 full_loss: 6.63715 grace_loss: 6.62750 loss1: 0.00734 loss2: 0.01544
+Epoch: 119 full_loss: 6.63011 grace_loss: 6.62023 loss1: 0.00764 loss2: 0.01492
+Epoch: 120 full_loss: 6.62258 grace_loss: 6.61268 loss1: 0.00764 loss2: 0.01510
+Accuracy: 0.655403002457873 Recall@1: 0.479945560844225 F1: 0.465084120401338
+Epoch: 121 full_loss: 6.61140 grace_loss: 6.60183 loss1: 0.00734 loss2: 0.01489
+Epoch: 122 full_loss: 6.60053 grace_loss: 6.59081 loss1: 0.00753 loss2: 0.01464
+Epoch: 123 full_loss: 6.59955 grace_loss: 6.59014 loss1: 0.00723 loss2: 0.01454
+Epoch: 124 full_loss: 6.58722 grace_loss: 6.57770 loss1: 0.00727 loss2: 0.01502
+Epoch: 125 full_loss: 6.58027 grace_loss: 6.57072 loss1: 0.00737 loss2: 0.01456
+Epoch: 126 full_loss: 6.57192 grace_loss: 6.56263 loss1: 0.00714 loss2: 0.01437
+Epoch: 127 full_loss: 6.56604 grace_loss: 6.55652 loss1: 0.00731 loss2: 0.01472
+Epoch: 128 full_loss: 6.55179 grace_loss: 6.54258 loss1: 0.00703 loss2: 0.01446
+Epoch: 129 full_loss: 6.54806 grace_loss: 6.53901 loss1: 0.00689 loss2: 0.01441
+Epoch: 130 full_loss: 6.53768 grace_loss: 6.52862 loss1: 0.00688 loss2: 0.01451
+Accuracy: 0.655203500650432 Recall@1: 0.496236607351707 F1: 0.454985033745631
+Epoch: 131 full_loss: 6.52910 grace_loss: 6.52007 loss1: 0.00684 loss2: 0.01459
+Epoch: 132 full_loss: 6.52241 grace_loss: 6.51352 loss1: 0.00672 loss2: 0.01451
+Epoch: 133 full_loss: 6.51957 grace_loss: 6.51053 loss1: 0.00694 loss2: 0.01403
+Epoch: 134 full_loss: 6.51189 grace_loss: 6.50267 loss1: 0.00707 loss2: 0.01433
+Epoch: 135 full_loss: 6.49950 grace_loss: 6.49038 loss1: 0.00702 loss2: 0.01394
+Epoch: 136 full_loss: 6.50007 grace_loss: 6.49105 loss1: 0.00688 loss2: 0.01429
+Epoch: 137 full_loss: 6.48832 grace_loss: 6.47962 loss1: 0.00663 loss2: 0.01376
+Epoch: 138 full_loss: 6.48592 grace_loss: 6.47692 loss1: 0.00689 loss2: 0.01405
+Epoch: 139 full_loss: 6.47599 grace_loss: 6.46742 loss1: 0.00644 loss2: 0.01419
+Epoch: 140 full_loss: 6.46502 grace_loss: 6.45613 loss1: 0.00683 loss2: 0.01376
+Accuracy: 0.672914680323596 Recall@1: 0.504626921727347 F1: 0.476165043950844
+Epoch: 141 full_loss: 6.46350 grace_loss: 6.45506 loss1: 0.00642 loss2: 0.01353
+Epoch: 142 full_loss: 6.45373 grace_loss: 6.44533 loss1: 0.00640 loss2: 0.01334
+Epoch: 143 full_loss: 6.44491 grace_loss: 6.43623 loss1: 0.00669 loss2: 0.01331
+Epoch: 144 full_loss: 6.43461 grace_loss: 6.42589 loss1: 0.00670 loss2: 0.01347
+Epoch: 145 full_loss: 6.43264 grace_loss: 6.42407 loss1: 0.00657 loss2: 0.01329
+Epoch: 146 full_loss: 6.42634 grace_loss: 6.41798 loss1: 0.00640 loss2: 0.01309
+Epoch: 147 full_loss: 6.41527 grace_loss: 6.40682 loss1: 0.00647 loss2: 0.01322
+Epoch: 148 full_loss: 6.40813 grace_loss: 6.39966 loss1: 0.00645 loss2: 0.01343
+Epoch: 149 full_loss: 6.40572 grace_loss: 6.39730 loss1: 0.00649 loss2: 0.01287
+Epoch: 150 full_loss: 6.39731 grace_loss: 6.38923 loss1: 0.00608 loss2: 0.01337
+Accuracy: 0.674721611037480 Recall@1: 0.507849922449289 F1: 0.480615055421409
+Epoch: 151 full_loss: 6.39174 grace_loss: 6.38336 loss1: 0.00641 loss2: 0.01313
+Epoch: 152 full_loss: 6.37746 grace_loss: 6.36927 loss1: 0.00628 loss2: 0.01271
+Epoch: 153 full_loss: 6.36868 grace_loss: 6.36084 loss1: 0.00588 loss2: 0.01303
+Epoch: 154 full_loss: 6.36426 grace_loss: 6.35608 loss1: 0.00627 loss2: 0.01277
+Epoch: 155 full_loss: 6.35915 grace_loss: 6.35141 loss1: 0.00582 loss2: 0.01284
+Epoch: 156 full_loss: 6.35302 grace_loss: 6.34515 loss1: 0.00591 loss2: 0.01309
+Epoch: 157 full_loss: 6.34745 grace_loss: 6.33940 loss1: 0.00614 loss2: 0.01276
+Epoch: 158 full_loss: 6.34482 grace_loss: 6.33694 loss1: 0.00594 loss2: 0.01291
+Epoch: 159 full_loss: 6.33299 grace_loss: 6.32513 loss1: 0.00593 loss2: 0.01288
+Epoch: 160 full_loss: 6.32674 grace_loss: 6.31880 loss1: 0.00607 loss2: 0.01246
+Accuracy: 0.687768978385346 Recall@1: 0.507413770897788 F1: 0.477947185447343
+Epoch: 161 full_loss: 6.32122 grace_loss: 6.31336 loss1: 0.00603 loss2: 0.01225
+Epoch: 162 full_loss: 6.32001 grace_loss: 6.31256 loss1: 0.00560 loss2: 0.01231
+Epoch: 163 full_loss: 6.31039 grace_loss: 6.30273 loss1: 0.00578 loss2: 0.01253
+Epoch: 164 full_loss: 6.30597 grace_loss: 6.29846 loss1: 0.00562 loss2: 0.01257
+Epoch: 165 full_loss: 6.29809 grace_loss: 6.29066 loss1: 0.00556 loss2: 0.01250
+Epoch: 166 full_loss: 6.28755 grace_loss: 6.27991 loss1: 0.00579 loss2: 0.01234
+Epoch: 167 full_loss: 6.28500 grace_loss: 6.27776 loss1: 0.00543 loss2: 0.01204
+Epoch: 168 full_loss: 6.27793 grace_loss: 6.27066 loss1: 0.00545 loss2: 0.01214
+Epoch: 169 full_loss: 6.27293 grace_loss: 6.26581 loss1: 0.00535 loss2: 0.01180
+Epoch: 170 full_loss: 6.26205 grace_loss: 6.25458 loss1: 0.00567 loss2: 0.01199
+Accuracy: 0.697696688551357 Recall@1: 0.514054170007274 F1: 0.480584794643555
+Epoch: 171 full_loss: 6.26756 grace_loss: 6.26021 loss1: 0.00563 loss2: 0.01149
+Epoch: 172 full_loss: 6.25223 grace_loss: 6.24495 loss1: 0.00556 loss2: 0.01148
+Epoch: 173 full_loss: 6.25117 grace_loss: 6.24405 loss1: 0.00540 loss2: 0.01147
+Epoch: 174 full_loss: 6.24747 grace_loss: 6.24037 loss1: 0.00532 loss2: 0.01189
+Epoch: 175 full_loss: 6.24510 grace_loss: 6.23826 loss1: 0.00506 loss2: 0.01188
+Epoch: 176 full_loss: 6.23180 grace_loss: 6.22469 loss1: 0.00536 loss2: 0.01172
+Epoch: 177 full_loss: 6.23040 grace_loss: 6.22352 loss1: 0.00521 loss2: 0.01116
+Epoch: 178 full_loss: 6.22832 grace_loss: 6.22137 loss1: 0.00528 loss2: 0.01121
+Epoch: 179 full_loss: 6.22195 grace_loss: 6.21531 loss1: 0.00500 loss2: 0.01096
+Epoch: 180 full_loss: 6.21097 grace_loss: 6.20428 loss1: 0.00504 loss2: 0.01101
+Accuracy: 0.702587020095971 Recall@1: 0.525868258997264 F1: 0.468267882082269
+Epoch: 181 full_loss: 6.21227 grace_loss: 6.20584 loss1: 0.00476 loss2: 0.01112
+Epoch: 182 full_loss: 6.20703 grace_loss: 6.20047 loss1: 0.00490 loss2: 0.01109
+Epoch: 183 full_loss: 6.19037 grace_loss: 6.18402 loss1: 0.00468 loss2: 0.01118
+Epoch: 184 full_loss: 6.18863 grace_loss: 6.18229 loss1: 0.00469 loss2: 0.01096
+Epoch: 185 full_loss: 6.18453 grace_loss: 6.17783 loss1: 0.00502 loss2: 0.01120
+Epoch: 186 full_loss: 6.17660 grace_loss: 6.17009 loss1: 0.00489 loss2: 0.01080
+Epoch: 187 full_loss: 6.17380 grace_loss: 6.16736 loss1: 0.00486 loss2: 0.01055
+Epoch: 188 full_loss: 6.16724 grace_loss: 6.16075 loss1: 0.00485 loss2: 0.01095
+Epoch: 189 full_loss: 6.16696 grace_loss: 6.16071 loss1: 0.00469 loss2: 0.01036
+Epoch: 190 full_loss: 6.16254 grace_loss: 6.15655 loss1: 0.00442 loss2: 0.01042
+Accuracy: 0.718272267639187 Recall@1: 0.537250893231447 F1: 0.493355914954928
+Epoch: 191 full_loss: 6.15247 grace_loss: 6.14619 loss1: 0.00471 loss2: 0.01044
+Epoch: 192 full_loss: 6.15773 grace_loss: 6.15172 loss1: 0.00448 loss2: 0.01022
+Epoch: 193 full_loss: 6.14755 grace_loss: 6.14129 loss1: 0.00469 loss2: 0.01044
+Epoch: 194 full_loss: 6.14535 grace_loss: 6.13908 loss1: 0.00473 loss2: 0.01026
+Epoch: 195 full_loss: 6.13693 grace_loss: 6.13099 loss1: 0.00444 loss2: 0.01000
+Epoch: 196 full_loss: 6.13654 grace_loss: 6.13051 loss1: 0.00447 loss2: 0.01037
+Epoch: 197 full_loss: 6.13076 grace_loss: 6.12478 loss1: 0.00451 loss2: 0.00983
+Epoch: 198 full_loss: 6.12076 grace_loss: 6.11492 loss1: 0.00437 loss2: 0.00978
+Epoch: 199 full_loss: 6.11968 grace_loss: 6.11410 loss1: 0.00407 loss2: 0.01008
+Epoch: 200 full_loss: 6.12005 grace_loss: 6.11430 loss1: 0.00425 loss2: 0.00999
+Accuracy: 0.731247988486512 Recall@1: 0.539918658045271 F1: 0.493244589792927
+Epoch: 201 full_loss: 6.11814 grace_loss: 6.11228 loss1: 0.00439 loss2: 0.00980
+Epoch: 202 full_loss: 6.10349 grace_loss: 6.09776 loss1: 0.00427 loss2: 0.00970
+Epoch: 203 full_loss: 6.10284 grace_loss: 6.09703 loss1: 0.00432 loss2: 0.00992
+Epoch: 204 full_loss: 6.10220 grace_loss: 6.09644 loss1: 0.00433 loss2: 0.00952
+Epoch: 205 full_loss: 6.09492 grace_loss: 6.08951 loss1: 0.00393 loss2: 0.00988
+Epoch: 206 full_loss: 6.08717 grace_loss: 6.08187 loss1: 0.00386 loss2: 0.00962
+Epoch: 207 full_loss: 6.08924 grace_loss: 6.08360 loss1: 0.00420 loss2: 0.00961
+Epoch: 208 full_loss: 6.08767 grace_loss: 6.08245 loss1: 0.00377 loss2: 0.00960
+Epoch: 209 full_loss: 6.08417 grace_loss: 6.07866 loss1: 0.00408 loss2: 0.00957
+Epoch: 210 full_loss: 6.08194 grace_loss: 6.07676 loss1: 0.00379 loss2: 0.00927
+Accuracy: 0.724547214713250 Recall@1: 0.532944941015088 F1: 0.502580758572213
+Epoch: 211 full_loss: 6.07163 grace_loss: 6.06636 loss1: 0.00385 loss2: 0.00948
+Epoch: 212 full_loss: 6.06837 grace_loss: 6.06345 loss1: 0.00354 loss2: 0.00921
+Epoch: 213 full_loss: 6.06241 grace_loss: 6.05710 loss1: 0.00396 loss2: 0.00902
+Epoch: 214 full_loss: 6.06709 grace_loss: 6.06221 loss1: 0.00354 loss2: 0.00897
+Epoch: 215 full_loss: 6.06339 grace_loss: 6.05848 loss1: 0.00357 loss2: 0.00897
+Model not improved for 1 consecutive epochs.
+Epoch: 216 full_loss: 6.05992 grace_loss: 6.05514 loss1: 0.00343 loss2: 0.00901
+Model not improved for 2 consecutive epochs.
+Epoch: 217 full_loss: 6.05675 grace_loss: 6.05175 loss1: 0.00373 loss2: 0.00851
+Model not improved for 3 consecutive epochs.
+Epoch: 218 full_loss: 6.04690 grace_loss: 6.04185 loss1: 0.00374 loss2: 0.00878
+Model not improved for 4 consecutive epochs.
+Epoch: 219 full_loss: 6.05292 grace_loss: 6.04797 loss1: 0.00366 loss2: 0.00860
+Model not improved for 5 consecutive epochs.
+Epoch: 220 full_loss: 6.04280 grace_loss: 6.03815 loss1: 0.00334 loss2: 0.00871
+Accuracy: 0.732495399029597 Recall@1: 0.557165342939413 F1: 0.500945139521508
+Model not improved for 6 consecutive epochs.
+Epoch: 221 full_loss: 6.04161 grace_loss: 6.03692 loss1: 0.00336 loss2: 0.00885
+Model not improved for 7 consecutive epochs.
+Epoch: 222 full_loss: 6.03416 grace_loss: 6.02931 loss1: 0.00361 loss2: 0.00826
+Model not improved for 8 consecutive epochs.
+Epoch: 223 full_loss: 6.04053 grace_loss: 6.03592 loss1: 0.00335 loss2: 0.00841
+Model not improved for 9 consecutive epochs.
+Epoch: 224 full_loss: 6.03245 grace_loss: 6.02813 loss1: 0.00308 loss2: 0.00820
+Model not improved for 10 consecutive epochs.
+Epoch: 225 full_loss: 6.03052 grace_loss: 6.02630 loss1: 0.00300 loss2: 0.00809
+Model not improved for 11 consecutive epochs.
+Epoch: 226 full_loss: 6.02692 grace_loss: 6.02250 loss1: 0.00313 loss2: 0.00855
+Model not improved for 12 consecutive epochs.
+Epoch: 227 full_loss: 6.01819 grace_loss: 6.01372 loss1: 0.00319 loss2: 0.00851
+Model not improved for 13 consecutive epochs.
+Epoch: 228 full_loss: 6.02210 grace_loss: 6.01761 loss1: 0.00332 loss2: 0.00783
+Model not improved for 14 consecutive epochs.
+Epoch: 229 full_loss: 6.01301 grace_loss: 6.00857 loss1: 0.00322 loss2: 0.00815
+Model not improved for 15 consecutive epochs.
+Epoch: 230 full_loss: 6.01422 grace_loss: 6.01003 loss1: 0.00299 loss2: 0.00799
+Accuracy: 0.740324582863805 Recall@1: 0.563828020645641 F1: 0.500759791939940
+Model not improved for 16 consecutive epochs.
+Epoch: 231 full_loss: 6.00881 grace_loss: 6.00465 loss1: 0.00300 loss2: 0.00778
+Model not improved for 17 consecutive epochs.
+Epoch: 232 full_loss: 6.01557 grace_loss: 6.01143 loss1: 0.00301 loss2: 0.00753
+Model not improved for 18 consecutive epochs.
+Epoch: 233 full_loss: 6.00828 grace_loss: 6.00432 loss1: 0.00281 loss2: 0.00769
+Model not improved for 19 consecutive epochs.
+Epoch: 234 full_loss: 6.01204 grace_loss: 6.00785 loss1: 0.00307 loss2: 0.00744
+Model not improved for 20 consecutive epochs.
+Epoch: 235 full_loss: 5.99916 grace_loss: 5.99517 loss1: 0.00289 loss2: 0.00732
+Model not improved for 21 consecutive epochs.
+Epoch: 236 full_loss: 6.00538 grace_loss: 6.00165 loss1: 0.00259 loss2: 0.00756
+Model not improved for 22 consecutive epochs.
+Epoch: 237 full_loss: 6.00559 grace_loss: 6.00174 loss1: 0.00269 loss2: 0.00774
+Model not improved for 23 consecutive epochs.
+Epoch: 238 full_loss: 6.00277 grace_loss: 5.99880 loss1: 0.00284 loss2: 0.00753
+Model not improved for 24 consecutive epochs.
+Epoch: 239 full_loss: 5.99670 grace_loss: 5.99283 loss1: 0.00273 loss2: 0.00757
+Model not improved for 25 consecutive epochs.
+Epoch: 240 full_loss: 5.98897 grace_loss: 5.98510 loss1: 0.00275 loss2: 0.00747
+Accuracy: 0.744906370232284 Recall@1: 0.568907039698770 F1: 0.507492762505207
+Model not improved for 26 consecutive epochs.
+Epoch: 241 full_loss: 5.99464 grace_loss: 5.99111 loss1: 0.00242 loss2: 0.00740
+Model not improved for 27 consecutive epochs.
+Epoch: 242 full_loss: 5.98764 grace_loss: 5.98389 loss1: 0.00269 loss2: 0.00708
+Model not improved for 28 consecutive epochs.
+Epoch: 243 full_loss: 5.99066 grace_loss: 5.98720 loss1: 0.00240 loss2: 0.00704
+Model not improved for 29 consecutive epochs.
+Epoch: 244 full_loss: 5.99074 grace_loss: 5.98703 loss1: 0.00265 loss2: 0.00706
+Model not improved for 30 consecutive epochs.
+Epoch: 245 full_loss: 5.99138 grace_loss: 5.98765 loss1: 0.00266 loss2: 0.00715
+Model not improved for 31 consecutive epochs.
+Epoch: 246 full_loss: 5.98454 grace_loss: 5.98093 loss1: 0.00252 loss2: 0.00721
+Model not improved for 32 consecutive epochs.
+Epoch: 247 full_loss: 5.97914 grace_loss: 5.97582 loss1: 0.00232 loss2: 0.00667
+Model not improved for 33 consecutive epochs.
+Epoch: 248 full_loss: 5.98262 grace_loss: 5.97916 loss1: 0.00240 loss2: 0.00708
+Model not improved for 34 consecutive epochs.
+Epoch: 249 full_loss: 5.98583 grace_loss: 5.98259 loss1: 0.00218 loss2: 0.00701
+Model not improved for 35 consecutive epochs.
+Epoch: 250 full_loss: 5.98235 grace_loss: 5.97896 loss1: 0.00240 loss2: 0.00664
+Accuracy: 0.757571576059690 Recall@1: 0.567299549563515 F1: 0.527486323270705
+Model not improved for 36 consecutive epochs.
+Epoch: 251 full_loss: 5.97220 grace_loss: 5.96901 loss1: 0.00217 loss2: 0.00675
+Model not improved for 37 consecutive epochs.
+Epoch: 252 full_loss: 5.97696 grace_loss: 5.97356 loss1: 0.00240 loss2: 0.00664
+Model not improved for 38 consecutive epochs.
+Epoch: 253 full_loss: 5.97475 grace_loss: 5.97162 loss1: 0.00211 loss2: 0.00681
+Model not improved for 39 consecutive epochs.
+Epoch: 254 full_loss: 5.97346 grace_loss: 5.97059 loss1: 0.00188 loss2: 0.00656
+Model not improved for 40 consecutive epochs.
+Epoch: 255 full_loss: 5.97678 grace_loss: 5.97355 loss1: 0.00228 loss2: 0.00636
+Model not improved for 41 consecutive epochs.
+Epoch: 256 full_loss: 5.97804 grace_loss: 5.97499 loss1: 0.00208 loss2: 0.00645
+Model not improved for 42 consecutive epochs.
+Epoch: 257 full_loss: 5.96663 grace_loss: 5.96392 loss1: 0.00174 loss2: 0.00649
+Model not improved for 43 consecutive epochs.
+Epoch: 258 full_loss: 5.97311 grace_loss: 5.97025 loss1: 0.00193 loss2: 0.00619
+Model not improved for 44 consecutive epochs.
+Epoch: 259 full_loss: 5.96858 grace_loss: 5.96595 loss1: 0.00170 loss2: 0.00617
+Model not improved for 45 consecutive epochs.
+Epoch: 260 full_loss: 5.96708 grace_loss: 5.96409 loss1: 0.00205 loss2: 0.00631
+Accuracy: 0.762903582972640 Recall@1: 0.559807818651464 F1: 0.508787600826872
+Model not improved for 46 consecutive epochs.
+Epoch: 261 full_loss: 5.97177 grace_loss: 5.96895 loss1: 0.00188 loss2: 0.00631
+Model not improved for 47 consecutive epochs.
+Epoch: 262 full_loss: 5.96441 grace_loss: 5.96157 loss1: 0.00193 loss2: 0.00607
+Model not improved for 48 consecutive epochs.
+Epoch: 263 full_loss: 5.96984 grace_loss: 5.96728 loss1: 0.00170 loss2: 0.00578
+Model not improved for 49 consecutive epochs.
+Epoch: 264 full_loss: 5.97186 grace_loss: 5.96933 loss1: 0.00163 loss2: 0.00602
+Model not improved for 50 consecutive epochs.
+Early stopping cluster train...
+Final model training done at epoch 264.
+
+------Final testing------
+测试数据集: 社交网络数据集一
+节点总数: 446
+预测正确节点数: 344
+预测错误节点数: 102
+准确率: 0.7713
+召回率1: 0.5734
+F1分数: 0.5213
+测试完成。

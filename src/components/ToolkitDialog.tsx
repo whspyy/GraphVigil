@@ -13,11 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-import { getToolkitLog, getToolkitCsv, ParsedCsv } from '../utils/toolkitData';
 import {
-  getCommunityMetrics,
-  getRoleMetrics,
-} from '../utils/metricExplain';
+  extractToolkitMetrics,
+  getToolkitCsv,
+  getToolkitLog,
+  ParsedCsv,
+  ToolkitMetric,
+} from '../utils/toolkitData';
 
 interface ToolkitDialogProps {
   open: boolean;
@@ -47,8 +49,8 @@ const TABS: TabDef[] = [
       { id: 'gcnDnnDual', label: '基于融合GCN和DNN的双重编码器算法' },
     ],
     datasets: [
-      { id: 'dataset1', label: '网暴事件社交网络数据集一' },
-      { id: 'dataset2', label: '网暴事件社交网络数据集二' },
+      { id: 'dataset1', label: '社交网络数据集一' },
+      { id: 'dataset2', label: '社交网络数据集二' },
     ],
   },
   {
@@ -58,34 +60,115 @@ const TABS: TabDef[] = [
       { id: 'gatv2', label: 'GATv2' },
       { id: 'appnp', label: 'APPNP' },
     ],
-    datasets: [{ id: 'dataset1', label: '网暴事件社交网络数据集' }],
+    datasets: [{ id: 'dataset1', label: '社交网络数据集' }],
   },
 ];
 
-type MetricRow = { label: string; value: string };
+const TABLE_PAGE_SIZE = 100;
+const TASK_DURATION: Record<string, number> = {
+  groupMining: 90_000,
+  roleDivision: 60_000,
+};
 
-function getMetricsFor(taskId: string, algo: string, dataset: string): MetricRow[] {
-  if (taskId === 'groupMining') {
-    const nodeCount = dataset === 'dataset2' ? 205 : 97;
-    const subtype = algo === 'gatModularity' ? 'gat' : algo === 'gcnDnnDual' ? 'secomm' : 'gcn';
-    const m = getCommunityMetrics(dataset, nodeCount, subtype);
-    return [
-      { label: '准确率', value: m.accuracy.display },
-      { label: '召回率', value: m.recall.display },
-      { label: '精确率', value: m.precision.display },
-      { label: 'F1值', value: m.f1.display },
-      { label: '调整兰德系数', value: m.adjustedRand.display },
-      { label: '模块度', value: m.modularity.display },
-    ];
+interface LogPlayback {
+  lines: string[];
+  deadlines: number[];
+  startedAt: number;
+  duration: number;
+  rawLog: string | null;
+  csv: ParsedCsv | null;
+  taskId: string;
+  revealedCount: number;
+}
+
+function findFirstLine(lines: string[], pattern: RegExp, fallback: number): number {
+  const index = lines.findIndex((line) => pattern.test(line));
+  return index >= 0 ? index : fallback;
+}
+
+function buildLogDeadlines(lines: string[], duration: number): number[] {
+  if (lines.length === 0) return [];
+
+  const trainingStart = findFirstLine(lines, /^(Epoch:|\[TRAIN\])/, lines.length);
+  const trainingAnnouncement = findFirstLine(lines, /开始训练/, trainingStart);
+  const stoppingStart = findFirstLine(
+    lines,
+    /Early stopping cluster train|Final model training done|\[INFO\] Early stopping/,
+    lines.length
+  );
+  const evaluationStart = findFirstLine(
+    lines,
+    /Final testing|训练完成，开始在测试集上评估|\[EVAL\]/,
+    lines.length
+  );
+
+  const deadlines = new Array<number>(lines.length);
+  const introAt = 300;
+  const trainingBeginAt = 4_500;
+  const stoppingBeginAt = duration - 9_000;
+  const evaluationBeginAt = duration - 4_500;
+  const finishAt = duration - 500;
+
+  // 初始化配置属于同一阶段，整批出现后留出几秒模拟模型和数据准备。
+  for (let index = 0; index < trainingStart; index++) {
+    deadlines[index] = index >= trainingAnnouncement
+      ? trainingBeginAt - 300
+      : introAt;
   }
-  // 网暴角色划分 —— 使用角色分类类指标
-  const m = getRoleMetrics('dataset1', algo === 'appnp' ? 'appnp' : 'graphAttention');
-  return [
-    { label: '准确率', value: m.accuracy.display },
-    { label: '召回率', value: m.recall.display },
-    { label: '精确率', value: m.precision.display },
-    { label: 'F1值', value: m.f1.display },
-  ];
+
+  // 训练轮次占用绝大部分运行时间，并按原始日志顺序均匀推进。
+  const trainingCount = Math.max(0, stoppingStart - trainingStart);
+  for (let offset = 0; offset < trainingCount; offset++) {
+    const progress = (offset + 1) / Math.max(trainingCount, 1);
+    deadlines[trainingStart + offset] =
+      trainingBeginAt + progress * (stoppingBeginAt - trainingBeginAt);
+  }
+
+  // 早停与模型保存信息快速连续输出，随后停顿再进入最终测试。
+  const stoppingEnd = Math.min(evaluationStart, lines.length);
+  const stoppingCount = Math.max(0, stoppingEnd - stoppingStart);
+  for (let offset = 0; offset < stoppingCount; offset++) {
+    const progress = (offset + 1) / Math.max(stoppingCount, 1);
+    deadlines[stoppingStart + offset] =
+      stoppingBeginAt + progress * 1_500;
+  }
+
+  // 最终评估阶段保持较慢节奏，让结果计算过程清晰可见。
+  const evaluationCount = Math.max(0, lines.length - evaluationStart);
+  for (let offset = 0; offset < evaluationCount; offset++) {
+    const progress = (offset + 1) / Math.max(evaluationCount, 1);
+    deadlines[evaluationStart + offset] =
+      evaluationBeginAt + progress * (finishAt - evaluationBeginAt);
+  }
+
+  // 缺少标准阶段标记的兜底：确保每一行都有合法且递增的时间点。
+  let previous = 0;
+  for (let index = 0; index < deadlines.length; index++) {
+    if (!Number.isFinite(deadlines[index])) {
+      deadlines[index] = Math.max(previous, introAt);
+    }
+    deadlines[index] = Math.max(previous, deadlines[index]);
+    previous = deadlines[index];
+  }
+
+  return deadlines;
+}
+
+function getLogLineClass(line: string): string {
+  if (/\[DONE\]|测试完成|Final testing/.test(line)) return 'text-emerald-300 font-semibold';
+  if (/\[EVAL\]|准确率|召回率|F1/.test(line)) return 'text-sky-300';
+  if (/Model not improved|Early stopping/.test(line)) return 'text-amber-300';
+  if (/^(Epoch:|\[TRAIN\])/.test(line)) return 'text-green-300';
+  if (/^======|\[INFO\]/.test(line)) return 'text-cyan-200';
+  return 'text-gray-300';
+}
+
+function isCorrectResult(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  return normalized === '是'
+    || normalized === '正确'
+    || normalized === 'true'
+    || normalized.includes('✓');
 }
 
 const ToolkitDialog: React.FC<ToolkitDialogProps> = ({ open, onOpenChange }) => {
@@ -97,18 +180,60 @@ const ToolkitDialog: React.FC<ToolkitDialogProps> = ({ open, onOpenChange }) => 
 
   const [running, setRunning] = useState(false);
   const [logLines, setLogLines] = useState<string[]>([]);
-  const [metrics, setMetrics] = useState<MetricRow[] | null>(null);
+  const [metrics, setMetrics] = useState<ToolkitMetric[] | null>(null);
   const [csv, setCsv] = useState<ParsedCsv | null>(null);
+  const [tablePage, setTablePage] = useState(0);
 
-  const timersRef = useRef<number[]>([]);
+  const playbackRef = useRef<LogPlayback | null>(null);
+  const playbackTimerRef = useRef<number | null>(null);
   const logBottomRef = useRef<HTMLDivElement>(null);
 
-  const clearTimers = () => {
-    timersRef.current.forEach((t) => clearTimeout(t));
-    timersRef.current = [];
+  const clearPlayback = () => {
+    if (playbackTimerRef.current !== null) {
+      window.clearInterval(playbackTimerRef.current);
+      playbackTimerRef.current = null;
+    }
+    playbackRef.current = null;
   };
 
-  useEffect(() => () => clearTimers(), []);
+  const syncPlayback = () => {
+    const playback = playbackRef.current;
+    if (!playback) return;
+
+    const elapsed = Date.now() - playback.startedAt;
+    let visibleCount = playback.revealedCount;
+    while (
+      visibleCount < playback.lines.length
+      && playback.deadlines[visibleCount] <= elapsed
+    ) {
+      visibleCount++;
+    }
+
+    if (visibleCount !== playback.revealedCount) {
+      playback.revealedCount = visibleCount;
+      setLogLines(playback.lines.slice(0, visibleCount));
+    }
+
+    if (elapsed >= playback.duration) {
+      setLogLines(playback.lines);
+      setMetrics(extractToolkitMetrics(playback.taskId, playback.rawLog, playback.csv));
+      setCsv(playback.csv);
+      setRunning(false);
+      clearPlayback();
+    }
+  };
+
+  useEffect(() => {
+    const handleVisibilityChange = () => syncPlayback();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+      clearPlayback();
+    };
+  }, []);
 
   // Switching tab resets algo/dataset to that tab's first option
   const handleTabChange = (tabId: string) => {
@@ -120,47 +245,54 @@ const ToolkitDialog: React.FC<ToolkitDialogProps> = ({ open, onOpenChange }) => 
 
   // Reset results when switching task/algo/dataset
   useEffect(() => {
-    clearTimers();
+    clearPlayback();
     setRunning(false);
     setLogLines([]);
     setMetrics(null);
     setCsv(null);
+    setTablePage(0);
   }, [activeTabId, algo, dataset]);
 
   // Auto-scroll log to bottom as lines stream in
   useEffect(() => {
-    logBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    logBottomRef.current?.scrollIntoView({ block: 'end' });
   }, [logLines]);
 
   const handleRun = () => {
-    clearTimers();
+    clearPlayback();
     setMetrics(null);
     setCsv(null);
     setLogLines([]);
+    setTablePage(0);
     setRunning(true);
 
     const raw = getToolkitLog(activeTabId, algo, dataset);
+    const resultCsv = getToolkitCsv(activeTabId, algo, dataset);
     const lines = raw
-      ? raw.replace(/\r\n/g, '\n').split('\n')
+      ? raw
+          .replace(/^\uFEFF/, '')
+          .replace(/\r\n?/g, '\n')
+          .split('\n')
+          .filter((line) => line.length > 0)
       : ['[WARN] 未找到该组合的运行日志文件（占位）。', '[INFO] 请将日志文件放入 src/data/toolkit/ 目录。'];
-
-    let acc: string[] = [];
-    lines.forEach((line, idx) => {
-      const t = window.setTimeout(() => {
-        acc = [...acc, line];
-        setLogLines([...acc]);
-        if (idx === lines.length - 1) {
-          const t2 = window.setTimeout(() => {
-            setMetrics(getMetricsFor(activeTabId, algo, dataset));
-            setCsv(getToolkitCsv(activeTabId, algo, dataset));
-            setRunning(false);
-          }, 300);
-          timersRef.current.push(t2);
-        }
-      }, 120 * idx);
-      timersRef.current.push(t);
-    });
+    const duration = TASK_DURATION[activeTabId] || 60_000;
+    playbackRef.current = {
+      lines,
+      deadlines: buildLogDeadlines(lines, duration),
+      startedAt: Date.now(),
+      duration,
+      rawLog: raw,
+      csv: resultCsv,
+      taskId: activeTabId,
+      revealedCount: 0,
+    };
+    playbackTimerRef.current = window.setInterval(syncPlayback, 100);
   };
+
+  const tablePageCount = csv ? Math.ceil(csv.rows.length / TABLE_PAGE_SIZE) : 0;
+  const visibleRows = csv
+    ? csv.rows.slice(tablePage * TABLE_PAGE_SIZE, (tablePage + 1) * TABLE_PAGE_SIZE)
+    : [];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -235,11 +367,13 @@ const ToolkitDialog: React.FC<ToolkitDialogProps> = ({ open, onOpenChange }) => 
           <div className="col-span-2 flex flex-col min-h-0 border border-gray-700 rounded-md bg-black/40">
             <div className="px-3 py-1.5 text-xs font-bold text-gray-300 border-b border-gray-700 shrink-0">运行日志</div>
             <ScrollArea className="flex-1 min-h-0">
-              <div className="p-3 font-mono text-[11px] leading-relaxed text-green-300 whitespace-pre-wrap">
+              <div className="p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
                 {logLines.length === 0 ? (
                   <span className="text-gray-500">选择算法与数据集后点击「运行测试」开始…</span>
                 ) : (
-                  logLines.map((l, i) => <div key={i}>{l}</div>)
+                  logLines.map((line, index) => (
+                    <div key={index} className={getLogLineClass(line)}>{line}</div>
+                  ))
                 )}
                 {running && <span className="animate-pulse text-green-400">▌</span>}
                 <div ref={logBottomRef} />
@@ -269,8 +403,29 @@ const ToolkitDialog: React.FC<ToolkitDialogProps> = ({ open, onOpenChange }) => 
 
         {/* Detailed prediction table */}
         <div className="flex flex-col min-h-0 flex-[2] border border-gray-700 rounded-md">
-          <div className="px-3 py-1.5 text-xs font-bold text-gray-300 border-b border-gray-700 shrink-0">
-            详细预测结果{csv ? `（共 ${csv.rows.length} 条）` : ''}
+          <div className="flex items-center justify-between px-3 py-1.5 text-xs font-bold text-gray-300 border-b border-gray-700 shrink-0">
+            <span>详细预测结果{csv ? `（共 ${csv.rows.length} 条）` : ''}</span>
+            {csv && tablePageCount > 1 && (
+              <div className="flex items-center gap-2 font-normal">
+                <button
+                  onClick={() => setTablePage((page) => Math.max(0, page - 1))}
+                  disabled={tablePage === 0}
+                  className="rounded border border-gray-600 px-2 py-0.5 text-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  上一页
+                </button>
+                <span className="font-mono text-gray-400">
+                  {tablePage + 1} / {tablePageCount}
+                </span>
+                <button
+                  onClick={() => setTablePage((page) => Math.min(tablePageCount - 1, page + 1))}
+                  disabled={tablePage >= tablePageCount - 1}
+                  className="rounded border border-gray-600 px-2 py-0.5 text-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  下一页
+                </button>
+              </div>
+            )}
           </div>
           <ScrollArea className="flex-1 min-h-0">
             {csv ? (
@@ -285,18 +440,25 @@ const ToolkitDialog: React.FC<ToolkitDialogProps> = ({ open, onOpenChange }) => 
                   </tr>
                 </thead>
                 <tbody>
-                  {csv.rows.map((row, ri) => (
-                    <tr key={ri} className="odd:bg-white/[0.02] hover:bg-white/[0.05]">
+                  {visibleRows.map((row, rowIndex) => (
+                    <tr
+                      key={tablePage * TABLE_PAGE_SIZE + rowIndex}
+                      className="odd:bg-white/[0.02] hover:bg-white/[0.05]"
+                    >
                       {row.map((cell, ci) => {
-                        const isCorrectCol = ci === csv.headers.length - 1;
+                        const isCorrectCol = csv.headers[ci]?.includes('是否')
+                          || ci === csv.headers.length - 1;
+                        const displayCell = isCorrectCol
+                          ? isCorrectResult(cell) ? '✓' : '✕'
+                          : cell;
                         const color = isCorrectCol
-                          ? cell.includes('✓')
+                          ? isCorrectResult(cell)
                             ? 'text-green-400'
                             : 'text-red-400'
                           : 'text-gray-200';
                         return (
                           <td key={ci} className={`px-3 py-1 font-mono ${color}`}>
-                            {cell}
+                            {displayCell}
                           </td>
                         );
                       })}
